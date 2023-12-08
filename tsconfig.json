@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",
+    "module": "Node16",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",
+    "rootDir": "lib/",
+    "strict": true,
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "sourceMap": false,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "paths": {
+      "@src/*": [
+        "./lib/src/*"
+      ],
+      "@tests/*": [
+        "./lib/tests/*"
+      ],
+    }
+  },
+  "include": [
+    "./lib/src",
+    "./lib/tests"
+  ],
+  "exclude": [
+    "node_modules",
+  ]
+}
