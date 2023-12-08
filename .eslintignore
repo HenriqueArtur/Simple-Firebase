@@ -1,0 +1,15 @@
+.eslintrc.js
+packages/**/*.js
+node_modules
+packages/**/dist
+**/*.yml
+**/*.md
+**/*.json
+**/*.cjs
+**/*.html
+**/*.css
+**/.env
+**/.env.example
+backupEmulator
+.vscode
+*.lock
