@@ -20,7 +20,9 @@ export type DBDocument<
   T extends object,
   AddTimestamps extends OptState<"TIMESTAMP">
 > = AddTimestamps extends "TIMESTAMP_DISABLE" ? DocumentData<T> : DocumentDataTimestamp<T>;
+
 export type DocumentData<T extends object> = T & { readonly _id: ID };
+
 export type DocumentDataTimestamp<T extends object> = T & {
   readonly _id: ID;
   readonly _createdAt: Date;
@@ -41,13 +43,21 @@ export type FirestoreDoc<T> = {
   [K in keyof T]: T[K] extends Date
     ? Timestamp
     : T[K] extends (infer U)[]
-    ? FirestoreDoc<U>[]
+    ? U extends Date
+      ? Timestamp[]
+      : FirestoreDoc<U>[]
     : T[K] extends object
     ? FirestoreDoc<T[K]>
     : T[K];
 };
 
+export type DocFormatFirestore<
+  T extends object,
+  O extends OptState<"TIMESTAMP">
+> = O extends "TIMESTAMP_DISABLE" ? DocumentDataFirestore<T> : DocumentDataTimestampFirestore<T>;
+
 export type DocumentDataFirestore<T extends object> = Omit<FirestoreDoc<DocumentData<T>>, "_id">;
+
 export type DocumentDataTimestampFirestore<T extends object> = Omit<
   FirestoreDoc<DocumentDataTimestamp<T>>,
   "_id"
