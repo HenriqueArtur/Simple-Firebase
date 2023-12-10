@@ -40,7 +40,13 @@ describe("Firestore MODEL", async () => {
 
   describe("CREATE", () => {
     describe("DEFAULT", () => {
-      const REPO_DEFAULT = BuildFirestore(FIRESTORE_WEB).model<TestData>("test");
+      const REPO_DEFAULT = BuildFirestore(FIRESTORE_WEB).model<
+        TestData,
+        "ADD_TIMESTAMP_DISABLE",
+        "USE_DATE_ENABLE"
+      >("test", {
+        useDate: true
+      });
 
       it("should create a data successfully", async () => {
         const aNewData = await REPO_DEFAULT.create(aTestDataMock);
@@ -63,7 +69,11 @@ describe("Firestore MODEL", async () => {
     });
 
     describe("CUSTOM ID", () => {
-      const REPO_ID = BuildFirestore(FIRESTORE_WEB).model<TestData>("test", { customId: true });
+      const REPO_ID = BuildFirestore(FIRESTORE_WEB).model<
+        TestData,
+        "ADD_TIMESTAMP_DISABLE",
+        "USE_DATE_ENABLE"
+      >("test", { customId: true, useDate: true });
 
       it("should create a data successfully", async () => {
         const custom_id = "custom_id";
@@ -101,8 +111,13 @@ describe("Firestore MODEL", async () => {
     });
 
     describe("WITH TIMESTAMPS", () => {
-      const REPO_TIME = BuildFirestore(FIRESTORE_WEB).model<TestData, "TIMESTAMP_ENABLE">("test", {
-        addTimestamps: true
+      const REPO_TIME = BuildFirestore(FIRESTORE_WEB).model<
+        TestData,
+        "ADD_TIMESTAMP_ENABLE",
+        "USE_DATE_ENABLE"
+      >("test", {
+        addTimestamps: true,
+        useDate: true
       });
 
       it("should create a data successfully", async () => {
@@ -118,9 +133,14 @@ describe("Firestore MODEL", async () => {
     });
 
     describe("ALL", () => {
-      const REPO_ALL = BuildFirestore(FIRESTORE_WEB).model<TestData, "TIMESTAMP_ENABLE">("test", {
+      const REPO_ALL = BuildFirestore(FIRESTORE_WEB).model<
+        TestData,
+        "ADD_TIMESTAMP_ENABLE",
+        "USE_DATE_ENABLE"
+      >("test", {
         customId: true,
-        addTimestamps: true
+        addTimestamps: true,
+        useDate: true
       });
 
       it("should create a data successfully", async () => {

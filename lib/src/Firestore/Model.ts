@@ -25,14 +25,14 @@ export interface Model<
   D extends OptState<"USE_DATE"> = "USE_DATE_ENABLE"
 > extends ModelFunctions<T, A, D> {
   path: string;
-  options?: ModelOptions<A>;
+  options?: ModelOptions<A, D>;
 }
 
 export function BuildModel<
   T extends Record<string, any>,
   A extends OptState<"ADD_TIMESTAMP">,
   D extends OptState<"USE_DATE">
->(aFirestoreRef: Firestore, path: string, options: ModelOptions<A>): Model<T, A, D> {
+>(aFirestoreRef: Firestore, path: string, options: ModelOptions<A, D>): Model<T, A, D> {
   const COLLECTION = collection(aFirestoreRef, path);
 
   return {
@@ -69,11 +69,11 @@ export function BuildModel<
         }
         await setDoc(aDocRef, aDataToCreate);
         const aDocSnap = await getDoc(aDocRef);
-        return formatData(aDocSnap.id, aDocSnap.data() as DocFromFirestore<T, A, D>);
+        return formatData(aDocSnap.id, aDocSnap.data() as DocFromFirestore<T, A, D>, options);
       }
       const aDocRef = await addDoc(COLLECTION, aDataToCreate);
       const aDocSnap = await getDoc(aDocRef);
-      return formatData(aDocSnap.id, aDocSnap.data() as DocFromFirestore<T, A, D>);
+      return formatData(aDocSnap.id, aDocSnap.data() as DocFromFirestore<T, A, D>, options);
     },
     delete: async (_anId: ID) => {
       throw new Error("Not Implemented!");

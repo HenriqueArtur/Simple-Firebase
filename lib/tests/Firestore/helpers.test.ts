@@ -1,4 +1,3 @@
-import { FirestoreDoc } from "@src/Firestore/FirestoreTypes.js";
 import { formatData } from "@src/Firestore/helpers.js";
 import { ID } from "@src/types.js";
 import { Timestamp } from "firebase/firestore";
@@ -22,7 +21,7 @@ describe("Firestore HELPERS", async () => {
     const aTimestamp: Timestamp = Timestamp.now();
     const aDate: Date = aTimestamp.toDate();
 
-    const aTestData: FirestoreDoc<TestData> = {
+    const aTestData = {
       aDate: aTimestamp,
       anArrayDates: [aTimestamp],
       anArrayObjDates: [{ aDate: aTimestamp }],
@@ -46,7 +45,11 @@ describe("Firestore HELPERS", async () => {
       }
     };
 
-    expect(formatData<TestData, "TIMESTAMP_DISABLE">(_id, aTestData)).toStrictEqual({
+    expect(
+      formatData<TestData, "ADD_TIMESTAMP_DISABLE", "USE_DATE_ENABLE">(_id, aTestData, {
+        useDate: true
+      })
+    ).toStrictEqual({
       _id,
       ...aResponseData
     });

@@ -17,14 +17,15 @@ type SimpleDocumentTimestamps = {
 };
 
 type UseDate<T extends object, D extends OptState<"USE_DATE">> = D extends "USE_DATE_ENABLE"
-  ? T
+  ? FirestoreDateDoc<T>
   : FirestoreDoc<T>;
 
 export type OptState<T extends string> = `${Uppercase<T>}_ENABLE` | `${Uppercase<T>}_DISABLE`;
 
-export type ModelOptions<A extends OptState<"ADD_TIMESTAMP">> = {
+export type ModelOptions<A extends OptState<"ADD_TIMESTAMP">, D extends OptState<"USE_DATE">> = {
   customId?: boolean;
-} & (A extends "ADD_TIMESTAMP_ENABLE" ? { addTimestamps: true } : { addTimestamps?: false });
+} & (A extends "ADD_TIMESTAMP_ENABLE" ? { addTimestamps: true } : { addTimestamps?: false }) &
+  (D extends "USE_DATE_ENABLE" ? { useDate: true } : { useDate?: false });
 
 export interface ModelFunctions<
   T extends object,
@@ -45,7 +46,7 @@ export type DocFromFirestore<
   T extends object,
   A extends OptState<"ADD_TIMESTAMP">,
   D extends OptState<"USE_DATE">
-> = Omit<SimpleDocument<T, A, D>, "_id">;
+> = FirestoreDoc<Omit<SimpleDocument<T, A, D>, "_id">>;
 
 export type FirestoreDoc<T> = {
   [K in keyof T]: T[K] extends Date
@@ -56,6 +57,18 @@ export type FirestoreDoc<T> = {
       : FirestoreDoc<U>[]
     : T[K] extends object
     ? FirestoreDoc<T[K]>
+    : T[K];
+};
+
+export type FirestoreDateDoc<T> = {
+  [K in keyof T]: T[K] extends Timestamp
+    ? Date
+    : T[K] extends (infer U)[]
+    ? U extends Timestamp
+      ? Date[]
+      : FirestoreDateDoc<U>[]
+    : T[K] extends object
+    ? FirestoreDateDoc<T[K]>
     : T[K];
 };
 

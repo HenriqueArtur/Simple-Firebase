@@ -1,16 +1,22 @@
 import { ID } from "@src/types.js";
-import { DocFromFirestore, OptState, SimpleDocument } from "./FirestoreTypes.js";
+import { DocFromFirestore, ModelOptions, OptState, SimpleDocument } from "./FirestoreTypes.js";
 import { Timestamp } from "firebase/firestore";
 
 export function formatData<
   T extends object,
   A extends OptState<"ADD_TIMESTAMP">,
   D extends OptState<"USE_DATE">
->(anId: ID, aData: DocFromFirestore<T, A, D>): SimpleDocument<T, A, D> {
+>(anId: ID, aData: DocFromFirestore<T, A, D>, opt: ModelOptions<A, D>): SimpleDocument<T, A, D> {
+  if (!opt.useDate) {
+    return {
+      _id: anId,
+      ...aData
+    } as SimpleDocument<T, A, D>;
+  }
   return {
     _id: anId,
     ...parseTimestampToDate(aData)
-  };
+  } as SimpleDocument<T, A, D>;
 }
 
 function parseTimestampToDate(aData: any): any {

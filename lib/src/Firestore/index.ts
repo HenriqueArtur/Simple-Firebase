@@ -4,13 +4,17 @@ import { ModelOptions, OptState } from "./FirestoreTypes.js";
 
 export function BuildFirestore(aFirestoreRef: Firestore) {
   return {
-    model: <T extends object, AddTimestamps extends OptState<"TIMESTAMP"> = "TIMESTAMP_DISABLE">(
+    model: <
+      T extends object,
+      A extends OptState<"ADD_TIMESTAMP"> = "ADD_TIMESTAMP_DISABLE",
+      D extends OptState<"USE_DATE"> = "USE_DATE_ENABLE"
+    >(
       modelName: string,
-      options: ModelOptions = {}
+      options: ModelOptions<A, D>
     ) => {
-      return BuildModel<T, AddTimestamps>(aFirestoreRef, modelName, options);
+      return BuildModel<T, A, D>(aFirestoreRef, modelName, options);
     },
-    modelWithSchema: (_modelName: string, _schema: any, _options: ModelOptions = {}) => {
+    modelWithSchema: (_modelName: string, _schema: any, _options = {}) => {
       throw new Error("Not implemented!");
     }
   };
