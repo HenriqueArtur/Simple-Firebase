@@ -13,6 +13,7 @@ export default defineConfig({
   test: {
     threads: true,
     globals: true,
-    include: ["./lib/tests/**"]
+    include: ["./lib/tests/**"],
+    exclude: ["./lib/tests/__HELPERS__/**"]
   }
 });
