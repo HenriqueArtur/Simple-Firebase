@@ -1,6 +1,5 @@
 import { ID } from "@src/types.js";
 import {
-  CollectionReference,
   Firestore,
   addDoc,
   collection,
@@ -10,35 +9,37 @@ import {
   setDoc
 } from "firebase/firestore";
 import {
-  DocFormat,
-  DocFormatFirestore,
+  DocFromFirestore,
   ModelFunctions,
   ModelOptions,
-  OptState
+  OperationDoc,
+  OptState,
+  SimpleDocument
 } from "./FirestoreTypes.js";
 import { formatData } from "./helpers.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 
-export interface Model<T extends object, AddTimestamps extends OptState<"TIMESTAMP">>
-  extends ModelFunctions<T, AddTimestamps> {
+export interface Model<
+  T extends object,
+  A extends OptState<"ADD_TIMESTAMP"> = "ADD_TIMESTAMP_DISABLE",
+  D extends OptState<"USE_DATE"> = "USE_DATE_ENABLE"
+> extends ModelFunctions<T, A, D> {
   path: string;
-  options?: ModelOptions;
+  options?: ModelOptions<A>;
 }
 
-export function BuildModel<T extends object, AddTimestamps extends OptState<"TIMESTAMP">>(
-  aFirestoreRef: Firestore,
-  path: string,
-  options: ModelOptions = {}
-): Model<T, AddTimestamps> {
-  const COLLECTION = collection(aFirestoreRef, path) as CollectionReference<
-    DocFormat<T, AddTimestamps>
-  >;
+export function BuildModel<
+  T extends Record<string, any>,
+  A extends OptState<"ADD_TIMESTAMP">,
+  D extends OptState<"USE_DATE">
+>(aFirestoreRef: Firestore, path: string, options: ModelOptions<A>): Model<T, A, D> {
+  const COLLECTION = collection(aFirestoreRef, path);
 
   return {
     path,
     options,
-    create: async (aData: T, customId?: ID) => {
-      if (options?.customId && !customId) {
+    create: async (aData: OperationDoc<SimpleDocument<T, A, D>>, customId?: ID) => {
+      if (options.customId && !customId) {
         throw new SimpleFirebaseFirestoreError(
           '"customId" is needed if option "customId" was enabled.'
         );
@@ -51,6 +52,7 @@ export function BuildModel<T extends object, AddTimestamps extends OptState<"TIM
           '"customId" is not needed if option "customId" was disabled.'
         );
       }
+
       const aDataToCreate = options?.addTimestamps
         ? {
             ...aData,
@@ -67,11 +69,11 @@ export function BuildModel<T extends object, AddTimestamps extends OptState<"TIM
         }
         await setDoc(aDocRef, aDataToCreate);
         const aDocSnap = await getDoc(aDocRef);
-        return formatData(aDocSnap.id, aDocSnap.data() as DocFormatFirestore<T, AddTimestamps>);
+        return formatData(aDocSnap.id, aDocSnap.data() as DocFromFirestore<T, A, D>);
       }
       const aDocRef = await addDoc(COLLECTION, aDataToCreate);
       const aDocSnap = await getDoc(aDocRef);
-      return formatData(aDocSnap.id, aDocSnap.data() as DocFormatFirestore<T, AddTimestamps>);
+      return formatData(aDocSnap.id, aDocSnap.data() as DocFromFirestore<T, A, D>);
     },
     delete: async (_anId: ID) => {
       throw new Error("Not Implemented!");

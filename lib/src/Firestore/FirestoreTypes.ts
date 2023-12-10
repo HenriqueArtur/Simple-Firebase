@@ -1,43 +1,51 @@
 import { ID } from "@src/types.js";
 import { Timestamp } from "firebase/firestore";
 
-export type OptState<T extends string> = `${Uppercase<T>}_ENABLE` | `${Uppercase<T>}_DISABLE`;
-
-export interface ModelOptions {
-  customId?: boolean;
-  addTimestamps?: boolean;
-}
-
-export interface ModelFunctions<T extends object, AddTimestamps extends OptState<"TIMESTAMP">> {
-  create: (aData: T, customId?: ID) => Promise<DBDocument<T, AddTimestamps>>;
-  delete: (anId: ID) => Promise<void>;
-  find: () => Promise<DBDocument<T, AddTimestamps>[]>;
-  findById: (anId: ID) => Promise<DBDocument<T, AddTimestamps> | undefined>;
-  update: (anId: ID, newData: any) => Promise<DBDocument<T, AddTimestamps>>;
-}
-
-export type DBDocument<
+export type SimpleDocument<
   T extends object,
-  AddTimestamps extends OptState<"TIMESTAMP">
-> = AddTimestamps extends "TIMESTAMP_DISABLE" ? DocumentData<T> : DocumentDataTimestamp<T>;
+  A extends OptState<"ADD_TIMESTAMP">,
+  D extends OptState<"USE_DATE">
+> = T & { _id: ID } & UseDate<AddTimestamps<A>, D>;
 
-export type DocumentData<T extends object> = T & { readonly _id: ID };
+type AddTimestamps<A extends OptState<"ADD_TIMESTAMP">> = A extends "ADD_TIMESTAMP_ENABLE"
+  ? SimpleDocumentTimestamps
+  : {};
 
-export type DocumentDataTimestamp<T extends object> = T & {
-  readonly _id: ID;
-  readonly _createdAt: Date;
-  readonly _updatedAt: Date;
+type SimpleDocumentTimestamps = {
+  _createdAt: Date;
+  _updatedAt: Date;
 };
 
-export interface TimestampsData {
-  _createdAt: Timestamp;
-  _updatedAt: Timestamp;
+type UseDate<T extends object, D extends OptState<"USE_DATE">> = D extends "USE_DATE_ENABLE"
+  ? T
+  : FirestoreDoc<T>;
+
+export type OptState<T extends string> = `${Uppercase<T>}_ENABLE` | `${Uppercase<T>}_DISABLE`;
+
+export type ModelOptions<A extends OptState<"ADD_TIMESTAMP">> = {
+  customId?: boolean;
+} & (A extends "ADD_TIMESTAMP_ENABLE" ? { addTimestamps: true } : { addTimestamps?: false });
+
+export interface ModelFunctions<
+  T extends object,
+  A extends OptState<"ADD_TIMESTAMP">,
+  D extends OptState<"USE_DATE">
+> {
+  create: (
+    aData: OperationDoc<SimpleDocument<T, A, D>>,
+    customId?: ID
+  ) => Promise<SimpleDocument<T, A, D>>;
+  delete: (anId: ID) => Promise<void>;
+  find: () => Promise<SimpleDocument<T, A, D>[]>;
+  findById: (anId: ID) => Promise<SimpleDocument<T, A, D> | undefined>;
+  update: (anId: ID, newData: any) => Promise<SimpleDocument<T, A, D>>;
 }
 
-export type DocFormat<
+export type DocFromFirestore<
   T extends object,
-  O extends OptState<"TIMESTAMP">
-> = O extends "TIMESTAMP_DISABLE" ? T : T & TimestampsData;
+  A extends OptState<"ADD_TIMESTAMP">,
+  D extends OptState<"USE_DATE">
+> = Omit<SimpleDocument<T, A, D>, "_id">;
 
 export type FirestoreDoc<T> = {
   [K in keyof T]: T[K] extends Date
@@ -51,14 +59,4 @@ export type FirestoreDoc<T> = {
     : T[K];
 };
 
-export type DocFormatFirestore<
-  T extends object,
-  O extends OptState<"TIMESTAMP">
-> = O extends "TIMESTAMP_DISABLE" ? DocumentDataFirestore<T> : DocumentDataTimestampFirestore<T>;
-
-export type DocumentDataFirestore<T extends object> = Omit<FirestoreDoc<DocumentData<T>>, "_id">;
-
-export type DocumentDataTimestampFirestore<T extends object> = Omit<
-  FirestoreDoc<DocumentDataTimestamp<T>>,
-  "_id"
->;
+export type OperationDoc<T> = Omit<T, "_id" | "_createdAt" | "_updatedAt">;
