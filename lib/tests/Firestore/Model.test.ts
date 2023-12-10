@@ -3,6 +3,7 @@ import { BuildFirestore } from "@src/Firestore/index.js";
 import { BuildFirebase } from "@src/Services.js";
 import { cleanCollections } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
 import dotenv from "dotenv";
+import { collection, doc, setDoc } from "firebase/firestore";
 dotenv.config();
 
 import { afterAll, describe, expect, it } from "vitest";
@@ -72,12 +73,26 @@ describe("Firestore MODEL", async () => {
         expect(aNewData.date).toStrictEqual(aTestDataMock.date);
       });
 
-      it("should error default config with 'customId'", async () => {
+      it("should error config with 'customId'", async () => {
         const error = new SimpleFirebaseFirestoreError(
           '"customId" is needed if option "customId" was enabled.'
         );
         try {
           expect(await REPO_ID.create(aTestDataMock)).toThrow(error);
+        } catch (err: any) {
+          expect(err).toHaveProperty("message");
+          expect(err.message).toBe(error.message);
+        }
+      });
+
+      it("should error document already exists", async () => {
+        const customId = "existing_custom_id";
+        const col = collection(FIRESTORE_WEB, "test");
+        const aDocRef = doc(col, customId);
+        await setDoc(aDocRef, { exist: true });
+        const error = new SimpleFirebaseFirestoreError(`Document "${customId}" already exists.`);
+        try {
+          expect(await REPO_ID.create(aTestDataMock, customId)).toThrow(error);
         } catch (err: any) {
           expect(err).toHaveProperty("message");
           expect(err.message).toBe(error.message);
