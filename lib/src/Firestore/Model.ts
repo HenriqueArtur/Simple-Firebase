@@ -61,6 +61,10 @@ export function BuildModel<T extends object, AddTimestamps extends OptState<"TIM
 
       if (customId) {
         const aDocRef = doc(COLLECTION, customId);
+        const aPreDocSnap = await getDoc(aDocRef);
+        if (aPreDocSnap.exists()) {
+          throw new SimpleFirebaseFirestoreError(`Document "${customId}" already exists.`);
+        }
         await setDoc(aDocRef, aDataToCreate);
         const aDocSnap = await getDoc(aDocRef);
         return formatData(aDocSnap.id, aDocSnap.data() as DocFormatFirestore<T, AddTimestamps>);
