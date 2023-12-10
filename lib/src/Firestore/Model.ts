@@ -9,8 +9,15 @@ import {
   serverTimestamp,
   setDoc
 } from "firebase/firestore";
-import { DocFormat, ModelFunctions, ModelOptions, OptState } from "./FirestoreTypes.js";
+import {
+  DocFormat,
+  DocFormatFirestore,
+  ModelFunctions,
+  ModelOptions,
+  OptState
+} from "./FirestoreTypes.js";
 import { formatData } from "./helpers.js";
+import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 
 export interface Model<T extends object, AddTimestamps extends OptState<"TIMESTAMP">>
   extends ModelFunctions<T, AddTimestamps> {
@@ -21,7 +28,7 @@ export interface Model<T extends object, AddTimestamps extends OptState<"TIMESTA
 export function BuildModel<T extends object, AddTimestamps extends OptState<"TIMESTAMP">>(
   aFirestoreRef: Firestore,
   path: string,
-  options?: ModelOptions
+  options: ModelOptions = {}
 ): Model<T, AddTimestamps> {
   const COLLECTION = collection(aFirestoreRef, path) as CollectionReference<
     DocFormat<T, AddTimestamps>
@@ -32,10 +39,17 @@ export function BuildModel<T extends object, AddTimestamps extends OptState<"TIM
     options,
     create: async (aData: T, customId?: ID) => {
       if (options?.customId && !customId) {
-        throw new Error('"customId" is needed if option "customId" was enabled.');
+        throw new SimpleFirebaseFirestoreError(
+          '"customId" is needed if option "customId" was enabled.'
+        );
       }
-      if ((!options && customId) || (options?.customId == false && customId)) {
-        throw new Error('"customId" is not needed if option "customId" was disabled.');
+      if (
+        (!("customId" in options) && customId) ||
+        ("customId" in options && options.customId == false && customId)
+      ) {
+        throw new SimpleFirebaseFirestoreError(
+          '"customId" is not needed if option "customId" was disabled.'
+        );
       }
       const aDataToCreate = options?.addTimestamps
         ? {
@@ -49,19 +63,11 @@ export function BuildModel<T extends object, AddTimestamps extends OptState<"TIM
         const aDocRef = doc(COLLECTION, customId);
         await setDoc(aDocRef, aDataToCreate);
         const aDocSnap = await getDoc(aDocRef);
-        return formatData(
-          aDocSnap.id,
-          aDocSnap.data() as DocFormat<T, AddTimestamps>,
-          options?.addTimestamps
-        );
+        return formatData(aDocSnap.id, aDocSnap.data() as DocFormatFirestore<T, AddTimestamps>);
       }
       const aDocRef = await addDoc(COLLECTION, aDataToCreate);
       const aDocSnap = await getDoc(aDocRef);
-      return formatData(
-        aDocSnap.id,
-        aDocSnap.data() as DocFormat<T, AddTimestamps>,
-        options?.addTimestamps
-      );
+      return formatData(aDocSnap.id, aDocSnap.data() as DocFormatFirestore<T, AddTimestamps>);
     },
     delete: async (_anId: ID) => {
       throw new Error("Not Implemented!");
