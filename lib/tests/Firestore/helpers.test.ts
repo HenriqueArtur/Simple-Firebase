@@ -15,36 +15,35 @@ describe("Firestore HELPERS", async () => {
       };
     };
   }
+  const _id: ID = "id";
+  const aTimestamp: Timestamp = Timestamp.now();
+  const aDate: Date = aTimestamp.toDate();
+
+  const aTestData = {
+    aDate: aTimestamp,
+    anArrayDates: [aTimestamp],
+    anArrayObjDates: [{ aDate: aTimestamp }],
+    aNested: {
+      aDate: aTimestamp,
+      aDoubleNested: {
+        aDate: aTimestamp
+      }
+    }
+  };
+
+  const aResponseData: TestData = {
+    aDate: aDate,
+    anArrayDates: [aDate],
+    anArrayObjDates: [{ aDate: aDate }],
+    aNested: {
+      aDate: aDate,
+      aDoubleNested: {
+        aDate: aDate
+      }
+    }
+  };
 
   it("should format date recursively", async () => {
-    const _id: ID = "id";
-    const aTimestamp: Timestamp = Timestamp.now();
-    const aDate: Date = aTimestamp.toDate();
-
-    const aTestData = {
-      aDate: aTimestamp,
-      anArrayDates: [aTimestamp],
-      anArrayObjDates: [{ aDate: aTimestamp }],
-      aNested: {
-        aDate: aTimestamp,
-        aDoubleNested: {
-          aDate: aTimestamp
-        }
-      }
-    };
-
-    const aResponseData: TestData = {
-      aDate: aDate,
-      anArrayDates: [aDate],
-      anArrayObjDates: [{ aDate: aDate }],
-      aNested: {
-        aDate: aDate,
-        aDoubleNested: {
-          aDate: aDate
-        }
-      }
-    };
-
     expect(
       formatData<TestData, "ADD_TIMESTAMP_DISABLE", "USE_DATE_ENABLE">(_id, aTestData, {
         useDate: true
@@ -52,6 +51,15 @@ describe("Firestore HELPERS", async () => {
     ).toStrictEqual({
       _id,
       ...aResponseData
+    });
+  });
+
+  it("should use Timestamp", async () => {
+    expect(
+      formatData<TestData, "ADD_TIMESTAMP_DISABLE", "USE_DATE_DISABLE">(_id, aTestData, {})
+    ).toStrictEqual({
+      _id,
+      ...aTestData
     });
   });
 });
