@@ -1,11 +1,13 @@
 {
   "name": "simple-firebase",
   "version": "0.1.0",
-  "main": "index.js",
   "repository": "git@github.com:HenriqueArtur/agenda.git",
   "author": "Henrique Artur <contato@henriqueartur.com>",
   "license": "MIT",
   "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
     "lint": "eslint",
