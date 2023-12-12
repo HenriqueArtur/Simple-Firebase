@@ -40,7 +40,7 @@ describe("Firestore MODEL", async () => {
 
   describe("CREATE", () => {
     describe("DEFAULT", () => {
-      const REPO_DEFAULT = BuildFirestore(FIRESTORE_WEB).model<
+      const REPO_DEFAULT = BuildFirestore(FIRESTORE_WEB).collection<
         TestData,
         "ADD_TIMESTAMP_DISABLE",
         "USE_DATE_ENABLE"
@@ -69,7 +69,7 @@ describe("Firestore MODEL", async () => {
     });
 
     describe("CUSTOM ID", () => {
-      const REPO_ID = BuildFirestore(FIRESTORE_WEB).model<
+      const REPO_ID = BuildFirestore(FIRESTORE_WEB).collection<
         TestData,
         "ADD_TIMESTAMP_DISABLE",
         "USE_DATE_ENABLE"
@@ -111,7 +111,7 @@ describe("Firestore MODEL", async () => {
     });
 
     describe("WITH TIMESTAMPS", () => {
-      const REPO_TIME = BuildFirestore(FIRESTORE_WEB).model<
+      const REPO_TIME = BuildFirestore(FIRESTORE_WEB).collection<
         TestData,
         "ADD_TIMESTAMP_ENABLE",
         "USE_DATE_ENABLE"
@@ -133,7 +133,7 @@ describe("Firestore MODEL", async () => {
     });
 
     describe("ALL", () => {
-      const REPO_ALL = BuildFirestore(FIRESTORE_WEB).model<
+      const REPO_ALL = BuildFirestore(FIRESTORE_WEB).collection<
         TestData,
         "ADD_TIMESTAMP_ENABLE",
         "USE_DATE_ENABLE"

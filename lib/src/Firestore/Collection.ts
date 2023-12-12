@@ -28,7 +28,7 @@ export interface Model<
   options?: ModelOptions<A, D>;
 }
 
-export function BuildModel<
+export function BuildCollection<
   T extends Record<string, any>,
   A extends OptState<"ADD_TIMESTAMP">,
   D extends OptState<"USE_DATE">
