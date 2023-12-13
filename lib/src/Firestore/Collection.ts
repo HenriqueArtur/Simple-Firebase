@@ -1,91 +1,41 @@
-import { ID } from "@src/types.js";
-import {
-  Firestore,
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  serverTimestamp,
-  setDoc
-} from "firebase/firestore";
-import {
-  DocFromFirestore,
-  ModelFunctions,
-  ModelOptions,
-  OperationDoc,
-  OptState,
-  SimpleDocument
-} from "./FirestoreTypes.js";
-import { formatData } from "./helpers.js";
-import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
+import { Deep } from "@src/types.js";
+import { CollectionReference, Firestore, collection } from "firebase/firestore";
+import { AddTimestamps, DateFormat, FirestoreDateDoc } from "./FirestoreTypes.js";
+import { SubCollection } from "./SubCollection.js";
+import { BuildFunctions, CollectionFunctions } from "./CollectionFunctions.js";
 
-export interface Model<
-  T extends object,
-  A extends OptState<"ADD_TIMESTAMP"> = "ADD_TIMESTAMP_DISABLE",
-  D extends OptState<"USE_DATE"> = "USE_DATE_ENABLE"
-> extends ModelFunctions<T, A, D> {
+export interface Collection<T extends object, D extends DateFormat>
+  extends CollectionFunctions<T, D> {
   path: string;
-  options?: ModelOptions<A, D>;
+  subCollections: SubCollection<D>[];
+  options: CollectionOptions;
 }
 
-export function BuildCollection<
-  T extends Record<string, any>,
-  A extends OptState<"ADD_TIMESTAMP">,
-  D extends OptState<"USE_DATE">
->(aFirestoreRef: Firestore, path: string, options: ModelOptions<A, D>): Model<T, A, D> {
-  const COLLECTION = collection(aFirestoreRef, path);
+export interface CollectionOptions {
+  customId: boolean;
+  addTimestamps: boolean;
+  convertDocTimestampsToDate: boolean;
+}
 
+export function BuildCollection<T extends object, D extends DateFormat>(
+  aFirestoreRef: Firestore,
+  path: string,
+  subCollections: SubCollection<D>[],
+  options: Deep<CollectionOptions>
+): Collection<T, D> {
+  const anOptions: CollectionOptions = {
+    customId: options.customId ?? false,
+    addTimestamps: options.addTimestamps ?? false,
+    convertDocTimestampsToDate: options.convertDocTimestampsToDate ?? false
+  };
+  const COLLECTION = collection(aFirestoreRef, path) as CollectionReference<
+    AddTimestamps<T>,
+    FirestoreDateDoc<AddTimestamps<T>>
+  >;
   return {
     path,
-    options,
-    create: async (aData: OperationDoc<SimpleDocument<T, A, D>>, customId?: ID) => {
-      if (options.customId && !customId) {
-        throw new SimpleFirebaseFirestoreError(
-          '"customId" is needed if option "customId" was enabled.'
-        );
-      }
-      if (
-        (!("customId" in options) && customId) ||
-        ("customId" in options && options.customId == false && customId)
-      ) {
-        throw new SimpleFirebaseFirestoreError(
-          '"customId" is not needed if option "customId" was disabled.'
-        );
-      }
-
-      const aDataToCreate = options?.addTimestamps
-        ? {
-            ...aData,
-            _createdAt: serverTimestamp(),
-            _updatedAt: serverTimestamp()
-          }
-        : aData;
-
-      if (customId) {
-        const aDocRef = doc(COLLECTION, customId);
-        const aPreDocSnap = await getDoc(aDocRef);
-        if (aPreDocSnap.exists()) {
-          throw new SimpleFirebaseFirestoreError(`Document "${customId}" already exists.`);
-        }
-        await setDoc(aDocRef, aDataToCreate);
-        const aDocSnap = await getDoc(aDocRef);
-        return formatData(aDocSnap.id, aDocSnap.data() as DocFromFirestore<T, A, D>, options);
-      }
-      const aDocRef = await addDoc(COLLECTION, aDataToCreate);
-      const aDocSnap = await getDoc(aDocRef);
-      return formatData(aDocSnap.id, aDocSnap.data() as DocFromFirestore<T, A, D>, options);
-    },
-    delete: async (_anId: ID) => {
-      throw new Error("Not Implemented!");
-    },
-    find: async () => {
-      throw new Error("Not Implemented!");
-    },
-    findById: async (_anId: ID) => {
-      throw new Error("Not Implemented!");
-    },
-    update: async (_anId: ID, _newData: any) => {
-      throw new Error("Not Implemented!");
-    }
+    subCollections,
+    options: anOptions,
+    ...BuildFunctions<T, D>(COLLECTION, anOptions, subCollections)
   };
 }

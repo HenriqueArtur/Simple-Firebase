@@ -1,22 +1,26 @@
 import { ID } from "@src/types.js";
-import { DocFromFirestore, ModelOptions, OptState, SimpleDocument } from "./FirestoreTypes.js";
-import { Timestamp } from "firebase/firestore";
+import { CollectionReference, Timestamp } from "firebase/firestore";
+import { SimpleDocument } from "./SimpleDocument.js";
+import { CollectionOptions } from "./Collection.js";
+import { SubCollection } from "./SubCollection.js";
+import { AddTimestamps, DateFormat, FirestoreDateDoc } from "./FirestoreTypes.js";
 
-export function formatData<
-  T extends object,
-  A extends OptState<"ADD_TIMESTAMP">,
-  D extends OptState<"USE_DATE">
->(anId: ID, aData: DocFromFirestore<T, A, D>, opt: ModelOptions<A, D>): SimpleDocument<T, A, D> {
-  if (!opt.useDate) {
-    return {
-      _id: anId,
-      ...aData
-    } as SimpleDocument<T, A, D>;
-  }
+export function formatData<T extends object, D extends DateFormat>(
+  anId: ID,
+  aData: AddTimestamps<T>,
+  opt: CollectionOptions,
+  parentCollection: CollectionReference<T, FirestoreDateDoc<T>>,
+  subCollections: SubCollection<D>[]
+): SimpleDocument<T, D> {
+  const { _createdAt, _updatedAt, ...data } = aData;
+  const aDataToReturn = opt.convertDocTimestampsToDate ? parseTimestampToDate(data) : data;
   return {
-    _id: anId,
-    ...parseTimestampToDate(aData)
-  } as SimpleDocument<T, A, D>;
+    id: anId,
+    data: aDataToReturn as T,
+    subCollection: subCollections.map((sc) => sc.build(parentCollection, anId, opt)),
+    createdAt: _createdAt,
+    updatedAt: _updatedAt
+  };
 }
 
 function parseTimestampToDate(aData: any): any {
