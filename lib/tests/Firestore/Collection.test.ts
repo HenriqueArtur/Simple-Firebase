@@ -2,8 +2,8 @@ import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestor
 import { BuildFirestore } from "@src/Firestore/index.js";
 import { BuildFirebase } from "@src/Services.js";
 import { cleanCollections } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
+import { Timestamp, collection, doc, setDoc } from "firebase/firestore";
 import dotenv from "dotenv";
-import { collection, doc, setDoc } from "firebase/firestore";
 dotenv.config();
 
 import { afterAll, describe, expect, it } from "vitest";
@@ -39,20 +39,32 @@ describe("Firestore MODEL", async () => {
   });
 
   describe("CREATE", () => {
-    describe("DEFAULT", () => {
-      const REPO_DEFAULT = BuildFirestore(FIRESTORE_WEB).collection<
-        TestData,
-        "ADD_TIMESTAMP_DISABLE",
-        "USE_DATE_ENABLE"
-      >("test", {
-        useDate: true
-      });
+    describe("DEFAULT (all configs false)", () => {
+      const REPO_DEFAULT = BuildFirestore(FIRESTORE_WEB).collection<TestData, "USE_TIMESTAMPS">(
+        "test",
+        [],
+        {
+          customId: false,
+          addTimestamps: false,
+          convertDocTimestampsToDate: false
+        }
+      );
 
       it("should create a data successfully", async () => {
         const aNewData = await REPO_DEFAULT.create(aTestDataMock);
-        expect(aNewData).toHaveProperty("_id");
-        expect(aNewData._id.length > 0).toBe(true);
-        expect(aNewData.date).toStrictEqual(aTestDataMock.date);
+        expect(Object.keys(aNewData)).toHaveLength(5);
+        expect(aNewData).toHaveProperty("id");
+        expect(aNewData).toHaveProperty("data");
+        expect(aNewData).toHaveProperty("subCollection");
+        expect(aNewData).toHaveProperty("createdAt");
+        expect(aNewData).toHaveProperty("updatedAt");
+        expect(aNewData.id.length > 0).toBe(true);
+        expect(aNewData.data.name).toStrictEqual(aTestDataMock.name);
+        expect(aNewData.data.anArray).toStrictEqual(aTestDataMock.anArray);
+        expect(aNewData.data.date).instanceOf(Timestamp);
+        expect(aNewData.subCollection).toHaveLength(0);
+        expect(aNewData.updatedAt).toBeUndefined();
+        expect(aNewData.createdAt).toBeUndefined();
       });
 
       it("should error default config with 'customId'", async () => {
@@ -69,18 +81,27 @@ describe("Firestore MODEL", async () => {
     });
 
     describe("CUSTOM ID", () => {
-      const REPO_ID = BuildFirestore(FIRESTORE_WEB).collection<
-        TestData,
-        "ADD_TIMESTAMP_DISABLE",
-        "USE_DATE_ENABLE"
-      >("test", { customId: true, useDate: true });
+      const REPO_ID = BuildFirestore(FIRESTORE_WEB).collection<TestData, "USE_TIMESTAMPS">(
+        "test",
+        [],
+        {
+          customId: true,
+          addTimestamps: false,
+          convertDocTimestampsToDate: false
+        }
+      );
 
       it("should create a data successfully", async () => {
         const custom_id = "custom_id";
         const aNewData = await REPO_ID.create(aTestDataMock, custom_id);
-        expect(aNewData).toHaveProperty("_id");
-        expect(aNewData._id).toBe(custom_id);
-        expect(aNewData.date).toStrictEqual(aTestDataMock.date);
+        expect(aNewData.id).toBe(custom_id);
+        expect(aNewData.data.name).toStrictEqual(aTestDataMock.name);
+        expect(aNewData.data.anArray).toStrictEqual(aTestDataMock.anArray);
+        expect(aNewData.data.date).toHaveProperty("nanoseconds");
+        expect(aNewData.data.date).toHaveProperty("seconds");
+        expect(aNewData.subCollection).toHaveLength(0);
+        expect(aNewData.updatedAt).toBeUndefined();
+        expect(aNewData.createdAt).toBeUndefined();
       });
 
       it("should error config with 'customId'", async () => {
@@ -111,48 +132,47 @@ describe("Firestore MODEL", async () => {
     });
 
     describe("WITH TIMESTAMPS", () => {
-      const REPO_TIME = BuildFirestore(FIRESTORE_WEB).collection<
-        TestData,
-        "ADD_TIMESTAMP_ENABLE",
-        "USE_DATE_ENABLE"
-      >("test", {
-        addTimestamps: true,
-        useDate: true
-      });
+      const REPO_TIME = BuildFirestore(FIRESTORE_WEB).collection<TestData, "USE_TIMESTAMPS">(
+        "test",
+        [],
+        {
+          customId: false,
+          addTimestamps: true,
+          convertDocTimestampsToDate: true
+        }
+      );
 
       it("should create a data successfully", async () => {
         const aNewData = await REPO_TIME.create(aTestDataMock);
-        expect(aNewData).toHaveProperty("_id");
-        expect(aNewData._id.length > 0).toBe(true);
-        expect(aNewData).toHaveProperty("_createdAt");
-        expect(aNewData._createdAt).instanceOf(Date);
-        expect(aNewData).toHaveProperty("_updatedAt");
-        expect(aNewData._updatedAt).instanceOf(Date);
-        expect(aNewData.date).toStrictEqual(aTestDataMock.date);
+        expect(aNewData.updatedAt).not.toBeNull();
+        expect(aNewData.updatedAt).instanceOf(Timestamp);
+        expect(aNewData.createdAt).not.toBeNull();
+        expect(aNewData.createdAt).instanceOf(Timestamp);
       });
     });
 
-    describe("ALL", () => {
-      const REPO_ALL = BuildFirestore(FIRESTORE_WEB).collection<
-        TestData,
-        "ADD_TIMESTAMP_ENABLE",
-        "USE_DATE_ENABLE"
-      >("test", {
+    describe("ALL configs true", () => {
+      const REPO_ALL = BuildFirestore(FIRESTORE_WEB).collection<TestData>("test", [], {
         customId: true,
         addTimestamps: true,
-        useDate: true
+        convertDocTimestampsToDate: true
       });
 
       it("should create a data successfully", async () => {
         const custom_id = "custom_id_all";
         const aNewData = await REPO_ALL.create(aTestDataMock, custom_id);
-        expect(aNewData).toHaveProperty("_id");
-        expect(aNewData._id).toBe(custom_id);
-        expect(aNewData).toHaveProperty("_createdAt");
-        expect(aNewData._createdAt).instanceOf(Date);
-        expect(aNewData).toHaveProperty("_updatedAt");
-        expect(aNewData._updatedAt).instanceOf(Date);
-        expect(aNewData.date).toStrictEqual(aTestDataMock.date);
+        expect(aNewData).toHaveProperty("id");
+        expect(aNewData).toHaveProperty("data");
+        expect(aNewData).toHaveProperty("subCollection");
+        expect(aNewData).toHaveProperty("createdAt");
+        expect(aNewData).toHaveProperty("updatedAt");
+        expect(aNewData.id).toBe(custom_id);
+        expect(aNewData.data.name).toStrictEqual(aTestDataMock.name);
+        expect(aNewData.data.anArray).toStrictEqual(aTestDataMock.anArray);
+        expect(aNewData.data.date).instanceOf(Date);
+        expect(aNewData.subCollection).toHaveLength(0);
+        expect(aNewData.updatedAt).not.toBeUndefined();
+        expect(aNewData.createdAt).not.toBeUndefined();
       });
     });
   });
