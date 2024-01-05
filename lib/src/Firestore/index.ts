@@ -1,19 +1,28 @@
 import { Firestore } from "firebase/firestore";
-import { BuildCollection, CollectionOptions } from "./Collection.js";
-import { DateFormat } from "./FirestoreTypes.js";
-import { SubCollection } from "./SubCollection.js";
+import { Collection, CollectionOptions } from "./Collection.js";
+import { Deep } from "@src/types.js";
 
 export function BuildFirestore(aFirestoreRef: Firestore) {
   return {
-    collection: <T extends object, D extends DateFormat = "USE_DATE">(
+    collection: <T extends object>(
       aCollectionName: string,
-      aSubCollections: SubCollection<D>[],
-      anOptions: CollectionOptions
+      anOptions?: Deep<CollectionOptions>
     ) => {
-      return BuildCollection<T, D>(aFirestoreRef, aCollectionName, aSubCollections, anOptions);
-    },
-    collectionWithSchema: (_modelName: string, _schema: any, _options = {}) => {
-      throw new Error("Not implemented!");
+      const anOptionsFilled = setOptions(anOptions);
+      return Collection<T>(aFirestoreRef, aCollectionName, anOptionsFilled);
     }
   };
 }
+
+function setOptions(anOptions?: Deep<CollectionOptions>): CollectionOptions {
+  if (!anOptions) {
+    return {
+      customId: false,
+      addTimestamps: true,
+    }
+  }
+  return {
+    customId: "customId" in anOptions ? (anOptions.customId as boolean) : false,
+    addTimestamps: "addTimestamps" in anOptions ? (anOptions.addTimestamps as boolean) : true
+  };
+};

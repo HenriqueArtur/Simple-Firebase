@@ -39,16 +39,8 @@ describe("Firestore MODEL", async () => {
   });
 
   describe("CREATE", () => {
-    describe("DEFAULT (all configs false)", () => {
-      const REPO_DEFAULT = BuildFirestore(FIRESTORE_WEB).collection<TestData, "USE_TIMESTAMPS">(
-        "test",
-        [],
-        {
-          customId: false,
-          addTimestamps: false,
-          convertDocTimestampsToDate: false
-        }
-      );
+    describe("DEFAULT", () => {
+      const REPO_DEFAULT = BuildFirestore(FIRESTORE_WEB).collection<TestData>("test");
 
       it("should create a data successfully", async () => {
         const aNewData = await REPO_DEFAULT.create(aTestDataMock);
@@ -62,9 +54,9 @@ describe("Firestore MODEL", async () => {
         expect(aNewData.data.name).toStrictEqual(aTestDataMock.name);
         expect(aNewData.data.anArray).toStrictEqual(aTestDataMock.anArray);
         expect(aNewData.data.date).instanceOf(Timestamp);
-        expect(aNewData.subCollection).toHaveLength(0);
-        expect(aNewData.updatedAt).toBeUndefined();
-        expect(aNewData.createdAt).toBeUndefined();
+        expect(aNewData.subCollection).toBeTypeOf("function");
+        expect(aNewData.updatedAt).instanceOf(Timestamp);
+        expect(aNewData.createdAt).instanceOf(Timestamp);
       });
 
       it("should error default config with 'customId'", async () => {
@@ -81,13 +73,12 @@ describe("Firestore MODEL", async () => {
     });
 
     describe("CUSTOM ID", () => {
-      const REPO_ID = BuildFirestore(FIRESTORE_WEB).collection<TestData, "USE_TIMESTAMPS">(
+      const REPO_ID = BuildFirestore(FIRESTORE_WEB).collection<TestData>(
         "test",
-        [],
+
         {
           customId: true,
-          addTimestamps: false,
-          convertDocTimestampsToDate: false
+          addTimestamps: false
         }
       );
 
@@ -99,7 +90,7 @@ describe("Firestore MODEL", async () => {
         expect(aNewData.data.anArray).toStrictEqual(aTestDataMock.anArray);
         expect(aNewData.data.date).toHaveProperty("nanoseconds");
         expect(aNewData.data.date).toHaveProperty("seconds");
-        expect(aNewData.subCollection).toHaveLength(0);
+        expect(aNewData.subCollection).toBeTypeOf("function");
         expect(aNewData.updatedAt).toBeUndefined();
         expect(aNewData.createdAt).toBeUndefined();
       });
@@ -131,31 +122,22 @@ describe("Firestore MODEL", async () => {
       });
     });
 
-    describe("WITH TIMESTAMPS", () => {
-      const REPO_TIME = BuildFirestore(FIRESTORE_WEB).collection<TestData, "USE_TIMESTAMPS">(
-        "test",
-        [],
-        {
-          customId: false,
-          addTimestamps: true,
-          convertDocTimestampsToDate: true
-        }
-      );
+    describe("WITHOUT TIMESTAMPS", () => {
+      const REPO_TIME = BuildFirestore(FIRESTORE_WEB).collection<TestData>("test", {
+        addTimestamps: false
+      });
 
       it("should create a data successfully", async () => {
         const aNewData = await REPO_TIME.create(aTestDataMock);
-        expect(aNewData.updatedAt).not.toBeNull();
-        expect(aNewData.updatedAt).instanceOf(Timestamp);
-        expect(aNewData.createdAt).not.toBeNull();
-        expect(aNewData.createdAt).instanceOf(Timestamp);
+        expect(aNewData.updatedAt).toBeUndefined();
+        expect(aNewData.createdAt).toBeUndefined();
       });
     });
 
     describe("ALL configs true", () => {
-      const REPO_ALL = BuildFirestore(FIRESTORE_WEB).collection<TestData>("test", [], {
+      const REPO_ALL = BuildFirestore(FIRESTORE_WEB).collection<TestData>("test", {
         customId: true,
-        addTimestamps: true,
-        convertDocTimestampsToDate: true
+        addTimestamps: true
       });
 
       it("should create a data successfully", async () => {
@@ -169,8 +151,8 @@ describe("Firestore MODEL", async () => {
         expect(aNewData.id).toBe(custom_id);
         expect(aNewData.data.name).toStrictEqual(aTestDataMock.name);
         expect(aNewData.data.anArray).toStrictEqual(aTestDataMock.anArray);
-        expect(aNewData.data.date).instanceOf(Date);
-        expect(aNewData.subCollection).toHaveLength(0);
+        expect(aNewData.data.date).instanceOf(Timestamp);
+        expect(aNewData.subCollection).toBeTypeOf("function");
         expect(aNewData.updatedAt).not.toBeUndefined();
         expect(aNewData.createdAt).not.toBeUndefined();
       });

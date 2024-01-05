@@ -21,8 +21,7 @@ describe("FIREBASE Firestore", async () => {
 
   it("should instantiate Firebase Firestore", async () => {
     const repository = BuildFirestore(FIRESTORE_WEB);
-    expect(Object.keys(repository)).toHaveLength(2);
+    expect(Object.keys(repository)).toHaveLength(1);
     expect(repository).toHaveProperty("collection");
-    expect(repository).toHaveProperty("collectionWithSchema");
   });
 });
