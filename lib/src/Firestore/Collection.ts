@@ -1,9 +1,4 @@
-import {
-  CollectionReference,
-  Firestore,
-  collection,
-} from "firebase/firestore";
-import { AddTimestamps, FirestoreDateDoc } from "./FirestoreTypes.js";
+import { CollectionReference, Firestore, collection } from "firebase/firestore";
 import { BuildFunctions } from "./CollectionFunctions.js";
 
 export interface CollectionOptions {
@@ -16,10 +11,7 @@ export function Collection<T extends object>(
   aPath: string,
   anOptions: CollectionOptions
 ) {
-  const aCollection = collection(aFirestoreRef, aPath) as CollectionReference<
-    AddTimestamps<T>,
-    FirestoreDateDoc<AddTimestamps<T>>
-  >;
+  const aCollection = collection(aFirestoreRef, aPath);
   return BuildFunctions<T>(aCollection, anOptions);
 }
 
@@ -28,9 +20,6 @@ export function SubCollection<T extends object>(
   aPath: string,
   anOptions: CollectionOptions
 ) {
-  const aCollection = collection(aParentCollection, aPath) as CollectionReference<
-    AddTimestamps<T>,
-    FirestoreDateDoc<AddTimestamps<T>>
-  >;
+  const aCollection = collection(aParentCollection, aPath);
   return BuildFunctions<T>(aCollection, anOptions);
 }

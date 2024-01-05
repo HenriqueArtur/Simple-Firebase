@@ -1,12 +1,12 @@
 import { ID } from "@src/types.js";
 import { CollectionReference, Timestamp } from "firebase/firestore/lite";
-import { AddTimestamps, FirestoreDoc } from "./FirestoreTypes.js";
+import { AddTimestamps } from "./FirestoreTypes.js";
 import { CollectionFunctions } from "./CollectionFunctions.js";
 import { CollectionOptions, SubCollection } from "./Collection.js";
 
 export interface SimpleDocument<T extends object> {
   id: ID;
-  data: FirestoreDoc<T>;
+  data: T;
   createdAt: Timestamp | undefined;
   updatedAt: Timestamp | undefined;
   subCollection: <SC extends object>(path: string) => CollectionFunctions<SC>;

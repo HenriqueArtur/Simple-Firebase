@@ -1,5 +1,6 @@
 import {
   CollectionReference,
+  DocumentData,
   addDoc,
   doc,
   getDoc,
@@ -7,14 +8,14 @@ import {
   setDoc
 } from "firebase/firestore";
 import { CollectionOptions } from "./Collection.js";
-import { AddTimestamps, FirestoreDateDoc } from "./FirestoreTypes.js";
+import { AddTimestamps, FirestoreDate } from "./FirestoreTypes.js";
 import { ID } from "@src/types.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 import { SimpleDocument, formatSimpleDocument } from "./SimpleDocument.js";
 
 /* MAIN */
 export interface CollectionFunctions<T extends object> {
-  create: (aData: T, customId?: ID) => Promise<SimpleDocument<T>>;
+  create: (aData: FirestoreDate<T>, customId?: ID) => Promise<SimpleDocument<T>>;
   delete: (anId: ID) => Promise<void>;
   find: () => Promise<SimpleDocument<T>[]>;
   findById: (anId: ID) => Promise<SimpleDocument<T>>;
@@ -22,11 +23,12 @@ export interface CollectionFunctions<T extends object> {
 }
 
 export function BuildFunctions<T extends object>(
-  aCollection: CollectionReference<AddTimestamps<T>, FirestoreDateDoc<AddTimestamps<T>>>,
+  aCollection: CollectionReference,
   anOptions: CollectionOptions
 ): CollectionFunctions<T> {
   return {
-    create: async (aData: T, customId?: ID) => create<T>(aCollection, anOptions, aData, customId),
+    create: async (aData: FirestoreDate<T>, customId?: ID) =>
+      create<T>(aCollection, anOptions, aData, customId),
     delete: async (_anId: ID) => {
       throw new Error("Not Implemented!");
     },
@@ -44,9 +46,9 @@ export function BuildFunctions<T extends object>(
 
 /* ++!!++ FUNCTIONS ++!!++ */
 async function create<T extends object>(
-  aCollection: CollectionReference<AddTimestamps<T>, FirestoreDateDoc<AddTimestamps<T>>>,
+  aCollection: CollectionReference,
   anOptions: CollectionOptions,
-  aData: T,
+  aData: FirestoreDate<T>,
   customId?: ID
 ) {
   if (anOptions.customId && !customId) {
@@ -77,12 +79,12 @@ async function create<T extends object>(
     if (aPreDocSnap.exists()) {
       throw new SimpleFirebaseFirestoreError(`Document "${customId}" already exists.`);
     }
-    await setDoc(aDocRef, aDataToCreate);
+    await setDoc<DocumentData, DocumentData>(aDocRef, aDataToCreate);
     const aDocSnap = await getDoc(aDocRef);
     const aNewData = aDocSnap.data() as AddTimestamps<T>;
     return formatSimpleDocument(aDocSnap.id, aNewData, anOptions, aCollection);
   }
-  const aDocRef = await addDoc(aCollection, aDataToCreate);
+  const aDocRef = await addDoc<DocumentData, DocumentData>(aCollection, aDataToCreate);
   const aDocSnap = await getDoc(aDocRef);
   const aNewData = aDocSnap.data() as AddTimestamps<T>;
   return formatSimpleDocument(aDocSnap.id, aNewData, anOptions, aCollection);

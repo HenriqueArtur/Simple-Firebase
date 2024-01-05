@@ -1,28 +1,14 @@
 import { Timestamp } from "firebase/firestore";
 
-export type DateFormat = "USE_TIMESTAMPS" | "USE_DATE";
-
-export type FirestoreDoc<T> = {
+export type FirestoreDate<T> = {
   [K in keyof T]: T[K] extends Date
     ? Timestamp
     : T[K] extends (infer U)[]
     ? U extends Date
       ? Timestamp[]
-      : FirestoreDoc<U>[]
+      : FirestoreDate<U>[]
     : T[K] extends object
-    ? FirestoreDoc<T[K]>
-    : T[K];
-};
-
-export type FirestoreDateDoc<T> = {
-  [K in keyof T]: T[K] extends Timestamp
-    ? Date
-    : T[K] extends (infer U)[]
-    ? U extends Timestamp
-      ? Date[]
-      : FirestoreDateDoc<U>[]
-    : T[K] extends object
-    ? FirestoreDateDoc<T[K]>
+    ? FirestoreDate<T[K]>
     : T[K];
 };
 
