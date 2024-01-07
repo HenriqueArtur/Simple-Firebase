@@ -5,7 +5,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { afterAll, describe, expect, it } from "vitest";
-import { Collection, CollectionOptions, SubCollection } from "@src/Firestore/Collection.js";
+import {
+  Collection,
+  CollectionOptions,
+  SubCollection,
+  setOptions
+} from "@src/Firestore/Collection.js";
 
 interface TestData {
   name: string;
@@ -63,6 +68,38 @@ describe("COLLECTION", async () => {
       expect(aCollection).toHaveProperty("find");
       expect(aCollection).toHaveProperty("findById");
       expect(aCollection).toHaveProperty("update");
+    });
+  });
+
+  describe("setOptions/2", () => {
+    it("should return a default options", () => {
+      const aNewOpt = setOptions();
+      expect(Object.keys(aNewOpt)).toHaveLength(2);
+      expect(aNewOpt.customId).toBe(false);
+      expect(aNewOpt.addTimestamps).toBe(true);
+    });
+
+    it("should set 'customId'", () => {
+      const aNewOpt = setOptions({
+        customId: true
+      });
+      expect(aNewOpt.customId).toBe(true);
+    });
+
+    it("should set 'addTimestamps'", () => {
+      const aNewOpt = setOptions({
+        addTimestamps: false
+      });
+      expect(aNewOpt.addTimestamps).toBe(false);
+    });
+
+    it("should set all options", () => {
+      const aNewOpt = setOptions({
+        customId: true,
+        addTimestamps: false
+      });
+      expect(aNewOpt.customId).toBe(true);
+      expect(aNewOpt.addTimestamps).toBe(false);
     });
   });
 });
