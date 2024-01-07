@@ -1,5 +1,5 @@
 import { Firestore } from "firebase/firestore";
-import { Collection, CollectionOptions } from "./Collection.js";
+import { Collection, CollectionOptions, setOptions } from "./Collection.js";
 import { Deep } from "@src/types.js";
 
 export function BuildFirestore(aFirestoreRef: Firestore) {
@@ -13,16 +13,3 @@ export function BuildFirestore(aFirestoreRef: Firestore) {
     }
   };
 }
-
-function setOptions(anOptions?: Deep<CollectionOptions>): CollectionOptions {
-  if (!anOptions) {
-    return {
-      customId: false,
-      addTimestamps: true,
-    }
-  }
-  return {
-    customId: "customId" in anOptions ? (anOptions.customId as boolean) : false,
-    addTimestamps: "addTimestamps" in anOptions ? (anOptions.addTimestamps as boolean) : true
-  };
-};

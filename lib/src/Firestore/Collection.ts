@@ -11,8 +11,7 @@ export function Collection<T extends object, SC extends Record<string, object> =
   aPath: string,
   anOptions: CollectionOptions
 ) {
-  const aCollection = collection(aFirestoreRef, aPath);
-  return BuildFunctions<T, SC>(aCollection, anOptions);
+  return BuildFunctions<T, SC>(collection(aFirestoreRef, aPath), anOptions);
 }
 
 export function SubCollection<T extends object, SC extends Record<string, object> = {}>(
@@ -20,6 +19,5 @@ export function SubCollection<T extends object, SC extends Record<string, object
   aPath: string,
   anOptions: CollectionOptions
 ) {
-  const aCollection = collection(aParentCollection, aPath);
-  return BuildFunctions<T, SC>(aCollection, anOptions);
+  return BuildFunctions<T, SC>(collection(aParentCollection, aPath), anOptions);
 }
