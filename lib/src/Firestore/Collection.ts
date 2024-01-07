@@ -1,6 +1,6 @@
 import { CollectionReference, Firestore, collection } from "firebase/firestore";
 import { BuildFunctions } from "./CollectionFunctions.js";
-import { Deep } from "@src/types.js";
+import { Deep, ID } from "@src/types.js";
 
 export interface CollectionOptions {
   customId: boolean;
@@ -17,10 +17,16 @@ export function Collection<T extends object, SC extends Record<string, object> =
 
 export function SubCollection<T extends object, SC extends Record<string, object> = {}>(
   aParentCollection: CollectionReference,
+  aParentId: ID,
   aPath: string,
   anOptions: CollectionOptions
 ) {
-  return BuildFunctions<T, SC>(collection(aParentCollection, aPath), anOptions);
+  try {
+    return BuildFunctions<T, SC>(collection(aParentCollection, aParentId, aPath), anOptions);
+  } catch (error) {
+    console.debug(error);
+    throw error;
+  }
 }
 
 /* HANDLERS */
