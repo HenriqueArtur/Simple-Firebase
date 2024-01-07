@@ -11,13 +11,13 @@ import { afterAll, describe, expect, it } from "vitest";
 describe("Firestore MODEL", async () => {
   interface TestData {
     name: string;
-    date: Date;
+    date: Timestamp;
     anArray: [{ num: number }];
   }
 
   const aTestDataMock: TestData = {
     name: "mock",
-    date: new Date(),
+    date: Timestamp.now(),
     anArray: [{ num: 1 }]
   };
 
