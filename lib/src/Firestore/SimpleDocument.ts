@@ -4,27 +4,27 @@ import { AddTimestamps } from "./FirestoreTypes.js";
 import { CollectionFunctions } from "./CollectionFunctions.js";
 import { CollectionOptions, SubCollection } from "./Collection.js";
 
-export interface SimpleDocument<T extends object> {
+export interface SimpleDocument<T extends object, SC extends Record<string, object> = {}> {
   id: ID;
   data: T;
   createdAt: Timestamp | undefined;
   updatedAt: Timestamp | undefined;
-  subCollection: <SC extends object>(path: string) => CollectionFunctions<SC>;
+  subCollection: (aPath: keyof SC) => CollectionFunctions<SC[keyof SC]>;
 }
 
-export function formatSimpleDocument<T extends object>(
+export function formatSimpleDocument<T extends object, SC extends Record<string, object> = {}>(
   anId: ID,
   aData: AddTimestamps<T>,
   opt: CollectionOptions,
   aParentCollection: CollectionReference
-): SimpleDocument<T> {
+): SimpleDocument<T, SC> {
   const { _createdAt, _updatedAt, ...data } = aData;
   return {
     id: anId,
     data: data as T,
     createdAt: _createdAt,
     updatedAt: _updatedAt,
-    subCollection: <SC extends object>(aPath: string) =>
-      SubCollection<SC>(aParentCollection, aPath, opt)
+    subCollection: (aPath: keyof SC) =>
+      SubCollection<SC[keyof SC]>(aParentCollection, aPath as string, opt)
   };
 }

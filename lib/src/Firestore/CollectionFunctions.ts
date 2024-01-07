@@ -14,21 +14,21 @@ import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestor
 import { SimpleDocument, formatSimpleDocument } from "./SimpleDocument.js";
 
 /* MAIN */
-export interface CollectionFunctions<T extends object> {
-  create: (aData: FirestoreDate<T>, customId?: ID) => Promise<SimpleDocument<T>>;
+export interface CollectionFunctions<T extends object, SC extends Record<string, object> = {}> {
+  create: (aData: FirestoreDate<T>, customId?: ID) => Promise<SimpleDocument<T, SC>>;
   delete: (anId: ID) => Promise<void>;
-  find: () => Promise<SimpleDocument<T>[]>;
-  findById: (anId: ID) => Promise<SimpleDocument<T>>;
-  update: (anId: ID, newData: any) => Promise<SimpleDocument<T>>;
+  find: () => Promise<SimpleDocument<T, SC>[]>;
+  findById: (anId: ID) => Promise<SimpleDocument<T, SC>>;
+  update: (anId: ID, newData: any) => Promise<SimpleDocument<T, SC>>;
 }
 
-export function BuildFunctions<T extends object>(
+export function BuildFunctions<T extends object, SC extends Record<string, object> = {}>(
   aCollection: CollectionReference,
   anOptions: CollectionOptions
 ): CollectionFunctions<T> {
   return {
     create: async (aData: FirestoreDate<T>, customId?: ID) =>
-      create<T>(aCollection, anOptions, aData, customId),
+      create<T, SC>(aCollection, anOptions, aData, customId),
     delete: async (_anId: ID) => {
       throw new Error("Not Implemented!");
     },
@@ -45,7 +45,7 @@ export function BuildFunctions<T extends object>(
 }
 
 /* ++!!++ FUNCTIONS ++!!++ */
-async function create<T extends object>(
+async function create<T extends object, SC extends Record<string, object> = {}>(
   aCollection: CollectionReference,
   anOptions: CollectionOptions,
   aData: FirestoreDate<T>,
@@ -82,10 +82,10 @@ async function create<T extends object>(
     await setDoc<DocumentData, DocumentData>(aDocRef, aDataToCreate);
     const aDocSnap = await getDoc(aDocRef);
     const aNewData = aDocSnap.data() as AddTimestamps<T>;
-    return formatSimpleDocument(aDocSnap.id, aNewData, anOptions, aCollection);
+    return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
   }
   const aDocRef = await addDoc<DocumentData, DocumentData>(aCollection, aDataToCreate);
   const aDocSnap = await getDoc(aDocRef);
   const aNewData = aDocSnap.data() as AddTimestamps<T>;
-  return formatSimpleDocument(aDocSnap.id, aNewData, anOptions, aCollection);
+  return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
 }
