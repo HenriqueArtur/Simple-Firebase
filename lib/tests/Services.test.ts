@@ -18,7 +18,7 @@ describe("Firebase Web Build", () => {
     const { AUTH_WEB, CLOUD_FUNCTIONS_WEB, FIRESTORE_WEB } = await BuildFirebase(
       config,
       "Simple Firebase",
-      "test"
+      { env: "test" }
     );
     expect(AUTH_WEB).not.toBeNull();
     expect(CLOUD_FUNCTIONS_WEB).not.toBeNull();
@@ -29,13 +29,13 @@ describe("Firebase Web Build", () => {
     const { AUTH_WEB, CLOUD_FUNCTIONS_WEB, FIRESTORE_WEB } = await BuildFirebase(
       config,
       "Simple Firebase",
-      "test"
+      { env: "test" }
     );
     const {
       AUTH_WEB: AUTH_WEB_SINGLETON,
       CLOUD_FUNCTIONS_WEB: CLOUD_FUNCTIONS_WEB_SINGLETON,
       FIRESTORE_WEB: FIRESTORE_WEB_SINGLETON
-    } = await BuildFirebase(config, "Simple Firebase", "test");
+    } = await BuildFirebase(config, "Simple Firebase", { env: "test" });
     expect(AUTH_WEB).toStrictEqual(AUTH_WEB_SINGLETON);
     expect(CLOUD_FUNCTIONS_WEB).toStrictEqual(CLOUD_FUNCTIONS_WEB_SINGLETON);
     expect(FIRESTORE_WEB).toStrictEqual(FIRESTORE_WEB_SINGLETON);

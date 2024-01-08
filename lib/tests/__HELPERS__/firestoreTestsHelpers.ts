@@ -53,6 +53,6 @@ export async function FirebaseObject() {
       appId: process.env!.APP_ID as string
     },
     "Simple Firebase",
-    "test"
+    { env: "test" }
   );
 }
