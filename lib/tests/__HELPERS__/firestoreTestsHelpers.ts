@@ -10,6 +10,7 @@ import {
   getDocs,
   query
 } from "firebase/firestore";
+import { BuildFirestore } from "@src/Firestore/index.js";
 
 type DeleteCollections = {
   name: string;
@@ -55,4 +56,8 @@ export async function FirebaseObject() {
     "Simple Firebase",
     { env: "test" }
   );
+}
+
+export function FirestoreObject(aFirestoreRef: Firestore) {
+  return BuildFirestore(aFirestoreRef);
 }
