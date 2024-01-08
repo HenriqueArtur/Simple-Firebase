@@ -24,7 +24,6 @@ export interface EnvOptions {
     auth?: number;
     functions?: number;
     firestore?: number;
-    hosting?: number;
   };
 }
 
@@ -34,7 +33,6 @@ interface EnvOptionsFilled {
     auth: number;
     functions: number;
     firestore: number;
-    hosting: number;
   };
 }
 
@@ -48,8 +46,7 @@ export async function BuildFirebase(
     port: {
       auth: opts.port && opts.port.auth ? opts.port.auth : 9099,
       functions: opts.port && opts.port.functions ? opts.port.functions : 5001,
-      firestore: opts.port && opts.port.firestore ? opts.port.firestore : 8080,
-      hosting: opts.port && opts.port.hosting ? opts.port.hosting : 5000
+      firestore: opts.port && opts.port.firestore ? opts.port.firestore : 8080
     }
   };
   const anApp = appExists(anAppName);
