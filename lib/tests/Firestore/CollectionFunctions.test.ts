@@ -4,7 +4,8 @@ import { Timestamp, collection, doc, setDoc } from "firebase/firestore";
 import { afterAll, describe, expect, it } from "vitest";
 import { BuildFunctions } from "@src/Firestore/CollectionFunctions.js";
 import { SubColTestData, TestData } from "@tests/__HELPERS__/typeHelpers.js";
-import { TEST_DATA_MOCK } from "@tests/__HELPERS__/dataHelpers.js";
+import { TEST_DATA_MOCK, TEST_DEFAULT_OPTIONS } from "@tests/__HELPERS__/dataHelpers.js";
+import { registerTestData } from "@tests/__HELPERS__/registerData.js";
 
 describe("Collections Functions", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
@@ -149,6 +150,21 @@ describe("Collections Functions", async () => {
           expect(aNewData.updatedAt).not.toBeUndefined();
           expect(aNewData.createdAt).not.toBeUndefined();
         });
+      });
+    });
+
+    describe("findById/1", () => {
+      const FUNCTIONS = BuildFunctions<TestData>(aCollection, TEST_DEFAULT_OPTIONS);
+
+      it("should not find an document", async () => {
+        expect(await FUNCTIONS.findById("fakerId")).toBeUndefined();
+      });
+
+      it("should not find", async () => {
+        const aNewDoc = await registerTestData(FIRESTORE_WEB);
+        const aDoc = await FUNCTIONS.findById(aNewDoc.id);
+        expect(aDoc).not.toBeUndefined();
+        expect(aDoc?.data).toStrictEqual(aNewDoc.data);
       });
     });
   });
