@@ -3,11 +3,12 @@ import { FirebaseObject, cleanCollections } from "@tests/__HELPERS__/firestoreTe
 import { Timestamp, collection, doc, setDoc } from "firebase/firestore";
 import { afterAll, describe, expect, it } from "vitest";
 import { BuildFunctions } from "@src/Firestore/CollectionFunctions.js";
-import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
+import { SubColTestData, TestData } from "@tests/__HELPERS__/typeHelpers.js";
 import { TEST_DATA_MOCK } from "@tests/__HELPERS__/dataHelpers.js";
 
 describe("Collections Functions", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
+  const aCollection = collection(FIRESTORE_WEB, "test");
 
   afterAll(async () => {
     await cleanCollections(FIRESTORE_WEB, ["test"]);
@@ -30,8 +31,6 @@ describe("Collections Functions", async () => {
   });
 
   describe("functions", () => {
-    const aCollection = collection(FIRESTORE_WEB, "test");
-
     describe("create/2", () => {
       describe("Options DEFAULT", () => {
         const REPO_DEFAULT = BuildFunctions<TestData>(aCollection, {
@@ -150,6 +149,32 @@ describe("Collections Functions", async () => {
           expect(aNewData.updatedAt).not.toBeUndefined();
           expect(aNewData.createdAt).not.toBeUndefined();
         });
+      });
+    });
+  });
+
+  describe("SUB COLLECTIONS", () => {
+    describe("create/2", async () => {
+      const FUNCTIONS = BuildFunctions<TestData, { sub: SubColTestData }>(aCollection, {
+        customId: false,
+        addTimestamps: true
+      });
+      const aParentData = await FUNCTIONS.create(TEST_DATA_MOCK);
+
+      it("should create a data successfully", async () => {
+        const aNewDataMock: SubColTestData = { phone: "+55" };
+        const aNewData = await aParentData.subCollection("sub").create(aNewDataMock);
+        expect(Object.keys(aNewData)).toHaveLength(5);
+        expect(aNewData).toHaveProperty("id");
+        expect(aNewData).toHaveProperty("data");
+        expect(aNewData).toHaveProperty("subCollection");
+        expect(aNewData).toHaveProperty("createdAt");
+        expect(aNewData).toHaveProperty("updatedAt");
+        expect(aNewData.id.length > 0).toBe(true);
+        expect(aNewData.data.phone).toStrictEqual(aNewDataMock.phone);
+        expect(aNewData.subCollection).toBeTypeOf("function");
+        expect(aNewData.updatedAt).instanceOf(Timestamp);
+        expect(aNewData.createdAt).instanceOf(Timestamp);
       });
     });
   });
