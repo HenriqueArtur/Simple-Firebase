@@ -24,7 +24,7 @@ export function formatSimpleDocument<T extends object, SC extends Record<string,
     data: data as T,
     createdAt: _createdAt,
     updatedAt: _updatedAt,
-    subCollection: (aPath: keyof SC) =>
-      SubCollection<SC[keyof SC]>(aParentCollection, anId, aPath as string, opt)
+    subCollection: <SubCollections extends Record<string, object> = {}>(aPath: keyof SC) =>
+      SubCollection<SC[keyof SC], SubCollections>(aParentCollection, anId, aPath as string, opt)
   };
 }
