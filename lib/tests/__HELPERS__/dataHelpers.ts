@@ -11,7 +11,10 @@ export const TEST_DEFAULT_OPTIONS: CollectionOptions = {
 export const TEST_DATA_MOCK: TestData = {
   name: "mock",
   date: Timestamp.now(),
-  anArray: [{ num: 1 }]
+  anArray: [{ num: 1 }],
+  nest: {
+    key: "value"
+  }
 };
 
 export const TEST_ID_MOCK: ID = "fakerId";
