@@ -178,6 +178,30 @@ describe("Collections Functions", async () => {
         expect(aDoc).toBeUndefined();
       });
     });
+
+    describe("update/2", () => {
+      const FUNCTIONS = BuildFunctions<TestData>(aCollection, TEST_DEFAULT_OPTIONS);
+
+      it("should throw an error document not exists", async () => {
+        try {
+          expect(await FUNCTIONS.update("fakerId", { name: "newName" })).toThrowError();
+        } catch (error: any) {
+          expect(error.code).toBe("not-found");
+        }
+      });
+
+      it("should successfully update an document", async () => {
+        const newValue = "new";
+        const aDoc = await registerTestData(FIRESTORE_WEB);
+        const anUpdatedDoc = await FUNCTIONS.update(aDoc.id, { nest: { key: newValue } });
+        expect(anUpdatedDoc.data).toStrictEqual({
+          ...aDoc.data,
+          nest: {
+            key: newValue
+          }
+        });
+      });
+    });
   });
 
   describe("SUB COLLECTIONS", () => {
