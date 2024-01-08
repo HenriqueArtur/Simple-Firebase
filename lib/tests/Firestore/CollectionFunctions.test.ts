@@ -167,6 +167,17 @@ describe("Collections Functions", async () => {
         expect(aDoc?.data).toStrictEqual(aNewDoc.data);
       });
     });
+
+    describe("hardDelete/1", () => {
+      const FUNCTIONS = BuildFunctions<TestData>(aCollection, TEST_DEFAULT_OPTIONS);
+
+      it("should delete a document", async () => {
+        const aNewDoc = await registerTestData(FIRESTORE_WEB);
+        expect(await FUNCTIONS.delete(aNewDoc.id)).toBeUndefined();
+        const aDoc = await FUNCTIONS.findById(aNewDoc.id);
+        expect(aDoc).toBeUndefined();
+      });
+    });
   });
 
   describe("SUB COLLECTIONS", () => {
