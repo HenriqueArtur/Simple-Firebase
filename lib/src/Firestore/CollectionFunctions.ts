@@ -2,6 +2,7 @@ import {
   CollectionReference,
   DocumentData,
   addDoc,
+  deleteDoc,
   doc,
   getDoc,
   serverTimestamp,
@@ -29,9 +30,7 @@ export function BuildFunctions<T extends object, SC extends Record<string, objec
   return {
     create: async (aData: FirestoreDate<T>, customId?: ID) =>
       create<T, SC>(aCollection, anOptions, aData, customId),
-    delete: async (_anId: ID) => {
-      throw new Error("Not Implemented!");
-    },
+    delete: async (anId: ID) => hardDelete(aCollection, anId),
     find: async () => {
       throw new Error("Not Implemented!");
     },
@@ -86,6 +85,10 @@ async function create<T extends object, SC extends Record<string, object> = {}>(
   const aDocSnap = await getDoc(aDocRef);
   const aNewData = aDocSnap.data() as AddTimestamps<T>;
   return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
+}
+
+async function hardDelete(aCollection: CollectionReference, anId: ID) {
+  await deleteDoc(doc(aCollection, anId));
 }
 
 async function findById<T extends object, SC extends Record<string, object> = {}>(
