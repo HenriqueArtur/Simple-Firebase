@@ -5,3 +5,7 @@ export interface TestData {
   date: Timestamp;
   anArray: [{ num: number }];
 }
+
+export interface SubColTestData {
+  phone: string;
+}
