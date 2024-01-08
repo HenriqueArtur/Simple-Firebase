@@ -25,7 +25,7 @@ export interface CollectionFunctions<T extends object, SC extends Record<string,
 export function BuildFunctions<T extends object, SC extends Record<string, object> = {}>(
   aCollection: CollectionReference,
   anOptions: CollectionOptions
-): CollectionFunctions<T> {
+): CollectionFunctions<T, SC> {
   return {
     create: async (aData: FirestoreDate<T>, customId?: ID) =>
       create<T, SC>(aCollection, anOptions, aData, customId),
