@@ -22,8 +22,7 @@ export async function cleanCollections(
   collections: DeleteCollections[]
 ): Promise<void> {
   for (const { name, subCollections } of collections) {
-    const COL = collection(aFirestoreRef, name);
-    await deleteCollection(COL, subCollections);
+    await deleteCollection(collection(aFirestoreRef, name), subCollections);
   }
 }
 
@@ -35,8 +34,7 @@ async function deleteCollection(
   for (const doc of docs.docs) {
     if (subCollections && subCollections.length > 0) {
       for (const { name, subCollections: currentSub } of subCollections) {
-        const aSubCollection = collection(aCollection, doc.id, name);
-        await deleteCollection(aSubCollection, currentSub);
+        await deleteCollection(collection(aCollection, doc.id, name), currentSub);
       }
     }
     await deleteDoc(doc.ref);

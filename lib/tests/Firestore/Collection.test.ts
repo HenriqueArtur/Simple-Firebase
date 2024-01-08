@@ -1,16 +1,12 @@
-import { FirebaseObject, cleanCollections } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
+import { FirebaseObject } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
 import { collection } from "firebase/firestore";
-import { afterAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { Collection, SubCollection, setOptions } from "@src/Firestore/Collection.js";
 import { TEST_DEFAULT_OPTIONS } from "@tests/__HELPERS__/dataHelpers.js";
 import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
 
 describe("COLLECTION", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
-
-  afterAll(async () => {
-    await cleanCollections(FIRESTORE_WEB, [{ name: "test" }]);
-  });
 
   describe("Collection/3", () => {
     it("should instantiate a Collection", () => {
