@@ -6,13 +6,15 @@ import {
   doc,
   getDoc,
   serverTimestamp,
-  setDoc
+  setDoc,
+  updateDoc
 } from "firebase/firestore";
 import { CollectionOptions } from "./Collection.js";
 import { AddTimestamps, FirestoreDate } from "./FirestoreTypes.js";
-import { ID } from "@src/types.js";
+import { Deep, ID } from "@src/types.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 import { SimpleDocument, formatSimpleDocument } from "./SimpleDocument.js";
+import { flattenObject } from "./Helpers.js";
 
 /* MAIN */
 export interface CollectionFunctions<T extends object, SC extends Record<string, object> = {}> {
@@ -20,7 +22,7 @@ export interface CollectionFunctions<T extends object, SC extends Record<string,
   delete: (anId: ID) => Promise<void>;
   find: () => Promise<SimpleDocument<T, SC>[]>;
   findById: (anId: ID) => Promise<SimpleDocument<T, SC> | undefined>;
-  update: (anId: ID, newData: any) => Promise<SimpleDocument<T, SC>>;
+  update: (anId: ID, newData: Deep<FirestoreDate<T>>) => Promise<SimpleDocument<T, SC>>;
 }
 
 export function BuildFunctions<T extends object, SC extends Record<string, object> = {}>(
@@ -35,9 +37,8 @@ export function BuildFunctions<T extends object, SC extends Record<string, objec
       throw new Error("Not Implemented!");
     },
     findById: async (anId: ID) => findById<T, SC>(aCollection, anOptions, anId),
-    update: async (_anId: ID, _newData: any) => {
-      throw new Error("Not Implemented!");
-    }
+    update: async (anId: ID, newData: Deep<FirestoreDate<T>>) =>
+      update<T, SC>(aCollection, anOptions, anId, newData)
   };
 }
 
@@ -103,4 +104,23 @@ async function findById<T extends object, SC extends Record<string, object> = {}
   }
   const aNewData = aDocSnap.data() as AddTimestamps<T>;
   return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
+}
+
+async function update<T extends object, SC extends Record<string, object> = {}>(
+  aCollection: CollectionReference,
+  anOptions: CollectionOptions,
+  anId: ID,
+  aData: Deep<FirestoreDate<T>>
+) {
+  const aDataToUpdate = anOptions.addTimestamps
+    ? {
+        ...aData,
+        _updatedAt: serverTimestamp()
+      }
+    : aData;
+  const aDocRef = doc(aCollection, anId);
+  await updateDoc(aDocRef, flattenObject(aDataToUpdate));
+  const aDocSnap = await getDoc(aDocRef);
+  const aDocUpdated = aDocSnap.data() as AddTimestamps<T>;
+  return formatSimpleDocument<T, SC>(aDocSnap.id, aDocUpdated, anOptions, aCollection);
 }
