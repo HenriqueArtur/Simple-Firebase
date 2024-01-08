@@ -1,23 +1,9 @@
 import { FirebaseObject, cleanCollections } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
-import { Timestamp, collection } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { afterAll, describe, expect, it } from "vitest";
-import {
-  Collection,
-  CollectionOptions,
-  SubCollection,
-  setOptions
-} from "@src/Firestore/Collection.js";
-
-interface TestData {
-  name: string;
-  date: Timestamp;
-  anArray: [{ num: number }];
-}
-
-const aTestOptions: CollectionOptions = {
-  customId: false,
-  addTimestamps: false
-};
+import { Collection, SubCollection, setOptions } from "@src/Firestore/Collection.js";
+import { TEST_DEFAULT_OPTIONS } from "@tests/__HELPERS__/dataHelpers.js";
+import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
 
 describe("COLLECTION", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
@@ -28,7 +14,7 @@ describe("COLLECTION", async () => {
 
   describe("Collection/3", () => {
     it("should instantiate a Collection", () => {
-      const aCollection = Collection<TestData>(FIRESTORE_WEB, "test", aTestOptions);
+      const aCollection = Collection<TestData>(FIRESTORE_WEB, "test", TEST_DEFAULT_OPTIONS);
       expect(Object.keys(aCollection)).toHaveLength(5);
       expect(aCollection).toHaveProperty("create");
       expect(aCollection).toHaveProperty("delete");
@@ -45,7 +31,7 @@ describe("COLLECTION", async () => {
         aParentCollection,
         "fakerId",
         "subCollection",
-        aTestOptions
+        TEST_DEFAULT_OPTIONS
       );
       expect(Object.keys(aCollection)).toHaveLength(5);
       expect(aCollection).toHaveProperty("create");

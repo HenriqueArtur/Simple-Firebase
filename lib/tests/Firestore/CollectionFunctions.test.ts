@@ -3,18 +3,8 @@ import { FirebaseObject, cleanCollections } from "@tests/__HELPERS__/firestoreTe
 import { Timestamp, collection, doc, setDoc } from "firebase/firestore";
 import { afterAll, describe, expect, it } from "vitest";
 import { BuildFunctions } from "@src/Firestore/CollectionFunctions.js";
-
-interface TestData {
-  name: string;
-  date: Timestamp;
-  anArray: [{ num: number }];
-}
-
-const aTestDataMock: TestData = {
-  name: "mock",
-  date: Timestamp.now(),
-  anArray: [{ num: 1 }]
-};
+import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
+import { TEST_DATA_MOCK } from "@tests/__HELPERS__/dataHelpers.js";
 
 describe("Collections Functions", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
@@ -50,7 +40,7 @@ describe("Collections Functions", async () => {
         });
 
         it("should create a data successfully", async () => {
-          const aNewData = await REPO_DEFAULT.create(aTestDataMock);
+          const aNewData = await REPO_DEFAULT.create(TEST_DATA_MOCK);
           expect(Object.keys(aNewData)).toHaveLength(5);
           expect(aNewData).toHaveProperty("id");
           expect(aNewData).toHaveProperty("data");
@@ -58,8 +48,8 @@ describe("Collections Functions", async () => {
           expect(aNewData).toHaveProperty("createdAt");
           expect(aNewData).toHaveProperty("updatedAt");
           expect(aNewData.id.length > 0).toBe(true);
-          expect(aNewData.data.name).toStrictEqual(aTestDataMock.name);
-          expect(aNewData.data.anArray).toStrictEqual(aTestDataMock.anArray);
+          expect(aNewData.data.name).toStrictEqual(TEST_DATA_MOCK.name);
+          expect(aNewData.data.anArray).toStrictEqual(TEST_DATA_MOCK.anArray);
           expect(aNewData.data.date).instanceOf(Timestamp);
           expect(aNewData.subCollection).toBeTypeOf("function");
           expect(aNewData.updatedAt).instanceOf(Timestamp);
@@ -71,7 +61,7 @@ describe("Collections Functions", async () => {
             '"customId" is not needed if option "customId" was disabled.'
           );
           try {
-            expect(await REPO_DEFAULT.create(aTestDataMock, "wrong_id")).toThrow(error);
+            expect(await REPO_DEFAULT.create(TEST_DATA_MOCK, "wrong_id")).toThrow(error);
           } catch (err: any) {
             expect(err).toHaveProperty("message");
             expect(err.message).toBe(error.message);
@@ -87,10 +77,10 @@ describe("Collections Functions", async () => {
 
         it("should create a data successfully", async () => {
           const custom_id = "custom_id";
-          const aNewData = await REPO_ID.create(aTestDataMock, custom_id);
+          const aNewData = await REPO_ID.create(TEST_DATA_MOCK, custom_id);
           expect(aNewData.id).toBe(custom_id);
-          expect(aNewData.data.name).toStrictEqual(aTestDataMock.name);
-          expect(aNewData.data.anArray).toStrictEqual(aTestDataMock.anArray);
+          expect(aNewData.data.name).toStrictEqual(TEST_DATA_MOCK.name);
+          expect(aNewData.data.anArray).toStrictEqual(TEST_DATA_MOCK.anArray);
           expect(aNewData.data.date).toHaveProperty("nanoseconds");
           expect(aNewData.data.date).toHaveProperty("seconds");
           expect(aNewData.subCollection).toBeTypeOf("function");
@@ -103,7 +93,7 @@ describe("Collections Functions", async () => {
             '"customId" is needed if option "customId" was enabled.'
           );
           try {
-            expect(await REPO_ID.create(aTestDataMock)).toThrow(error);
+            expect(await REPO_ID.create(TEST_DATA_MOCK)).toThrow(error);
           } catch (err: any) {
             expect(err).toHaveProperty("message");
             expect(err.message).toBe(error.message);
@@ -117,7 +107,7 @@ describe("Collections Functions", async () => {
           await setDoc(aDocRef, { exist: true });
           const error = new SimpleFirebaseFirestoreError(`Document "${customId}" already exists.`);
           try {
-            expect(await REPO_ID.create(aTestDataMock, customId)).toThrow(error);
+            expect(await REPO_ID.create(TEST_DATA_MOCK, customId)).toThrow(error);
           } catch (err: any) {
             expect(err).toHaveProperty("message");
             expect(err.message).toBe(error.message);
@@ -132,7 +122,7 @@ describe("Collections Functions", async () => {
         });
 
         it("should create a data successfully", async () => {
-          const aNewData = await REPO_TIME.create(aTestDataMock);
+          const aNewData = await REPO_TIME.create(TEST_DATA_MOCK);
           expect(aNewData.updatedAt).toBeUndefined();
           expect(aNewData.createdAt).toBeUndefined();
         });
@@ -146,15 +136,15 @@ describe("Collections Functions", async () => {
 
         it("should create a data successfully", async () => {
           const custom_id = "custom_id_all";
-          const aNewData = await REPO_ALL.create(aTestDataMock, custom_id);
+          const aNewData = await REPO_ALL.create(TEST_DATA_MOCK, custom_id);
           expect(aNewData).toHaveProperty("id");
           expect(aNewData).toHaveProperty("data");
           expect(aNewData).toHaveProperty("subCollection");
           expect(aNewData).toHaveProperty("createdAt");
           expect(aNewData).toHaveProperty("updatedAt");
           expect(aNewData.id).toBe(custom_id);
-          expect(aNewData.data.name).toStrictEqual(aTestDataMock.name);
-          expect(aNewData.data.anArray).toStrictEqual(aTestDataMock.anArray);
+          expect(aNewData.data.name).toStrictEqual(TEST_DATA_MOCK.name);
+          expect(aNewData.data.anArray).toStrictEqual(TEST_DATA_MOCK.anArray);
           expect(aNewData.data.date).instanceOf(Timestamp);
           expect(aNewData.subCollection).toBeTypeOf("function");
           expect(aNewData.updatedAt).not.toBeUndefined();
