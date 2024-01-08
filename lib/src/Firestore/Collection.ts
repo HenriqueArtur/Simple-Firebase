@@ -21,12 +21,7 @@ export function SubCollection<T extends object, SC extends Record<string, object
   aPath: string,
   anOptions: CollectionOptions
 ) {
-  try {
-    return BuildFunctions<T, SC>(collection(aParentCollection, aParentId, aPath), anOptions);
-  } catch (error) {
-    console.debug(error);
-    throw error;
-  }
+  return BuildFunctions<T, SC>(collection(aParentCollection, aParentId, aPath), anOptions);
 }
 
 /* HANDLERS */
