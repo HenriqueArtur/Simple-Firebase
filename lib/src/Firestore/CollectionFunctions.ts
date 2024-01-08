@@ -18,7 +18,7 @@ export interface CollectionFunctions<T extends object, SC extends Record<string,
   create: (aData: FirestoreDate<T>, customId?: ID) => Promise<SimpleDocument<T, SC>>;
   delete: (anId: ID) => Promise<void>;
   find: () => Promise<SimpleDocument<T, SC>[]>;
-  findById: (anId: ID) => Promise<SimpleDocument<T, SC>>;
+  findById: (anId: ID) => Promise<SimpleDocument<T, SC> | undefined>;
   update: (anId: ID, newData: any) => Promise<SimpleDocument<T, SC>>;
 }
 
@@ -35,9 +35,7 @@ export function BuildFunctions<T extends object, SC extends Record<string, objec
     find: async () => {
       throw new Error("Not Implemented!");
     },
-    findById: async (_anId: ID) => {
-      throw new Error("Not Implemented!");
-    },
+    findById: async (anId: ID) => findById<T, SC>(aCollection, anOptions, anId),
     update: async (_anId: ID, _newData: any) => {
       throw new Error("Not Implemented!");
     }
@@ -86,6 +84,20 @@ async function create<T extends object, SC extends Record<string, object> = {}>(
   }
   const aDocRef = await addDoc<DocumentData, DocumentData>(aCollection, aDataToCreate);
   const aDocSnap = await getDoc(aDocRef);
+  const aNewData = aDocSnap.data() as AddTimestamps<T>;
+  return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
+}
+
+async function findById<T extends object, SC extends Record<string, object> = {}>(
+  aCollection: CollectionReference,
+  anOptions: CollectionOptions,
+  anId: ID
+) {
+  const aDocRef = doc(aCollection, anId);
+  const aDocSnap = await getDoc(aDocRef);
+  if (!aDocSnap.exists()) {
+    return undefined;
+  }
   const aNewData = aDocSnap.data() as AddTimestamps<T>;
   return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
 }
