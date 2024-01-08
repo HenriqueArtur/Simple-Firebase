@@ -11,7 +11,7 @@ describe("Collections Functions", async () => {
   const aCollection = collection(FIRESTORE_WEB, "test");
 
   afterAll(async () => {
-    await cleanCollections(FIRESTORE_WEB, ["test"]);
+    await cleanCollections(FIRESTORE_WEB, [{ name: "test", subCollections: [{ name: "sub" }] }]);
   });
 
   describe("BuildFunctions/2", () => {

@@ -9,7 +9,7 @@ describe("COLLECTION", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
 
   afterAll(async () => {
-    await cleanCollections(FIRESTORE_WEB, ["test"]);
+    await cleanCollections(FIRESTORE_WEB, [{ name: "test" }]);
   });
 
   describe("Collection/3", () => {

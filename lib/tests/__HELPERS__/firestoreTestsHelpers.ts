@@ -1,19 +1,44 @@
-import { BuildFirebase } from "@src/Services.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-import { Firestore, collection, deleteDoc, getDocs, query } from "firebase/firestore";
+import { BuildFirebase } from "@src/Services.js";
+import {
+  CollectionReference,
+  Firestore,
+  collection,
+  deleteDoc,
+  getDocs,
+  query
+} from "firebase/firestore";
+
+type DeleteCollections = {
+  name: string;
+  subCollections?: DeleteCollections[];
+};
 
 export async function cleanCollections(
   aFirestoreRef: Firestore,
-  collections: string[]
+  collections: DeleteCollections[]
 ): Promise<void> {
-  for (const path of collections) {
-    const COL = collection(aFirestoreRef, path);
-    const docs = await getDocs(query(COL));
-    for (const doc of docs.docs) {
-      await deleteDoc(doc.ref);
+  for (const { name, subCollections } of collections) {
+    const COL = collection(aFirestoreRef, name);
+    await deleteCollection(COL, subCollections);
+  }
+}
+
+async function deleteCollection(
+  aCollection: CollectionReference,
+  subCollections?: DeleteCollections[]
+) {
+  const docs = await getDocs(query(aCollection));
+  for (const doc of docs.docs) {
+    if (subCollections && subCollections.length > 0) {
+      for (const { name, subCollections: currentSub } of subCollections) {
+        const aSubCollection = collection(aCollection, doc.id, name);
+        await deleteCollection(aSubCollection, currentSub);
+      }
     }
+    await deleteDoc(doc.ref);
   }
 }
 
