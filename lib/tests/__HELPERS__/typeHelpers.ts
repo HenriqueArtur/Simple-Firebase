@@ -2,6 +2,7 @@ import { Timestamp } from "firebase/firestore";
 
 export interface TestData {
   name: string;
+  number: number;
   date: Timestamp;
   anArray: [{ num: number }];
   nest: {

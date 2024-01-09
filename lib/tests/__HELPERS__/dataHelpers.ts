@@ -10,6 +10,7 @@ export const TEST_DEFAULT_OPTIONS: CollectionOptions = {
 
 export const TEST_DATA_MOCK: TestData = {
   name: "mock",
+  number: 10,
   date: Timestamp.now(),
   anArray: [{ num: 1 }],
   nest: {
