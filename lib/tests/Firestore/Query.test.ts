@@ -126,5 +126,17 @@ describe("Query", async () => {
       const response = query(aCollection, or(or(where("name", "==", "otherValue"))));
       expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
     });
+
+    it("should return a query with nested value", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          nest: {
+            key: "value"
+          }
+        }
+      };
+      const response = query(aCollection, where("nest.key", "==", "value"));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
   });
 });
