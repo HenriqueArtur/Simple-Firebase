@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export type LogicalOperators = "$AND" | "$OR";
 
 export type AttributeOperatorsNumber =
@@ -63,7 +65,7 @@ export type IsOperators<T> = {
     : K extends AttributeOperatorsNumber
     ? T extends number
       ? number
-      : Date
+      : Timestamp
     : K extends AttributeOperatorsNot
     ? T
     : T[];
