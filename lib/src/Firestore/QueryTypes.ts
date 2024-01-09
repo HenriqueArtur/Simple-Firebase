@@ -31,7 +31,7 @@ export type SimpleQuery<T extends object> = {
 export type Where<T extends object> =
   | { $AND: CompoundQuery<CompoundWithLogicOperators<T>> }
   | { $OR: CompoundQuery<CompoundWithLogicOperators<T>> }
-  | CompoundWithoutLogicOperators<T>;
+  | CompoundQuery<CompoundWithoutLogicOperators<T>>;
 
 export type CompoundWithLogicOperators<T> = {
   [K in keyof T]?: T[K];
