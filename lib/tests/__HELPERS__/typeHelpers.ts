@@ -6,6 +6,7 @@ export interface TestData {
   anArray: [{ num: number }];
   nest: {
     key: string;
+    key2: string;
   };
 }
 

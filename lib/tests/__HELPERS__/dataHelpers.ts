@@ -13,7 +13,8 @@ export const TEST_DATA_MOCK: TestData = {
   date: Timestamp.now(),
   anArray: [{ num: 1 }],
   nest: {
-    key: "value"
+    key: "value",
+    key2: "value"
   }
 };
 
