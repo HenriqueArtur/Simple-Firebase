@@ -1,5 +1,5 @@
-import { WhereFilterOp } from "firebase/firestore";
-import { AttributeOperators } from "./QueryTypes.js";
+import { OrderByDirection, WhereFilterOp } from "firebase/firestore";
+import { AnOrderByDirection, AttributeOperators } from "./QueryTypes.js";
 
 export function flattenObject(obj: Record<string, any>, parentKey = ""): Record<string, any> {
   let result: Record<string, any> = {};
@@ -57,3 +57,7 @@ export function aOperator(key: AttributeOperators): WhereFilterOp {
 
 export const formatAKey = (currentKey: string, lastKey: string) =>
   lastKey == "" ? currentKey : `${lastKey}.${currentKey}`;
+
+export function formatDirection(value: AnOrderByDirection) {
+  return value.toLowerCase() as OrderByDirection;
+}
