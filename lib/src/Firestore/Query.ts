@@ -1,21 +1,14 @@
-import {
-  CollectionReference,
-  Timestamp,
-  WhereFilterOp,
-  and,
-  or,
-  query,
-  where
-} from "firebase/firestore";
-import { AttributeOperators, SimpleQuery } from "./QueryTypes.js";
+import { CollectionReference, Timestamp, and, or, orderBy, query, where } from "firebase/firestore";
+import { AnOrderByDirection, AttributeOperators, SimpleQuery } from "./QueryTypes.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
+import { aOperator, formatAKey, formatDirection, isOperator } from "./Helpers.js";
 
 export function formatQuery<T extends object>(
   aCollection: CollectionReference,
   aQuery: SimpleQuery<T>
 ) {
   validateWhere(aQuery.where);
-  return query(aCollection, ...[...formatWhere(aQuery.where)]);
+  return query(aCollection, ...[...formatWhere(aQuery.where), ...formatOrderBy(aQuery.orderBy)]);
 }
 
 function validateWhere(aWhere: object) {
@@ -30,7 +23,7 @@ function validateWhere(aWhere: object) {
   }
 }
 
-function formatWhere(aWhere: object, lastKey = ""): any[] {
+export function formatWhere(aWhere: object, lastKey = ""): any[] {
   let filters = [];
   for (const [key, value] of Object.entries(aWhere)) {
     if (key == "$OR") {
@@ -68,45 +61,15 @@ function formatWhere(aWhere: object, lastKey = ""): any[] {
   return filters;
 }
 
-function isOperator(key: string) {
-  return [
-    "$LESS",
-    "$LESS_OR_EQ",
-    "$EQ",
-    "$GREATER_OR_EQ",
-    "$GREATER",
-    "$ARRAY_CONTAINS",
-    "$ARRAY_CONTAINS_ANY",
-    "$IN",
-    "$NOT_IN",
-    "$NOT"
-  ].includes(key);
-}
-
-function aOperator(key: AttributeOperators): WhereFilterOp {
-  switch (key) {
-    case "$LESS":
-      return "<";
-    case "$LESS_OR_EQ":
-      return "<=";
-    case "$EQ":
-      return "==";
-    case "$GREATER":
-      return ">";
-    case "$GREATER_OR_EQ":
-      return ">=";
-    case "$ARRAY_CONTAINS":
-      return "array-contains";
-    case "$ARRAY_CONTAINS_ANY":
-      return "array-contains-any";
-    case "$IN":
-      return "in";
-    case "$NOT_IN":
-      return "not-in";
-    case "$NOT":
-      return "!=";
+export function formatOrderBy(anOrder?: object, lastKey = ""): any[] {
+  if (!anOrder || Object.keys(anOrder).length == 0) return [];
+  const order = [];
+  for (const [key, value] of Object.entries(anOrder)) {
+    if (typeof value === "object" && value != null) {
+      order.push(...formatOrderBy(value, formatAKey(key, lastKey)));
+      continue;
+    }
+    order.push(orderBy(formatAKey(key, lastKey), formatDirection(value as AnOrderByDirection)));
   }
+  return order;
 }
-
-const formatAKey = (currentKey: string, lastKey: string) =>
-  lastKey == "" ? currentKey : `${lastKey}.${currentKey}`;
