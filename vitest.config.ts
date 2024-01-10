@@ -14,6 +14,6 @@ export default defineConfig({
     threads: true,
     globals: true,
     include: ["./lib/tests/**"],
-    exclude: ["./lib/tests/__HELPERS__/**"]
+    exclude: ["./lib/tests/__HELPERS__/**", "./lib/tests/__MOCKS__/**"]
   }
 });

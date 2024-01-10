@@ -5,22 +5,25 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   serverTimestamp,
   setDoc,
   updateDoc
 } from "firebase/firestore";
 import { CollectionOptions } from "./Collection.js";
-import { AddTimestamps, FirestoreDate } from "./FirestoreTypes.js";
+import { AddTimestamps, FirestoreDate, QueryResult } from "./FirestoreTypes.js";
 import { Deep, ID } from "@src/types.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 import { SimpleDocument, formatSimpleDocument } from "./SimpleDocument.js";
 import { flattenObject } from "./Helpers.js";
+import { SimpleQuery } from "./QueryTypes.js";
+import { formatQuery } from "./Query.js";
 
 /* MAIN */
 export interface CollectionFunctions<T extends object, SC extends Record<string, object> = {}> {
   create: (aData: FirestoreDate<T>, customId?: ID) => Promise<SimpleDocument<T, SC>>;
   delete: (anId: ID) => Promise<void>;
-  find: () => Promise<SimpleDocument<T, SC>[]>;
+  find: (aQuery: SimpleQuery<T>) => Promise<QueryResult<T, SC>>;
   findById: (anId: ID) => Promise<SimpleDocument<T, SC> | undefined>;
   update: (anId: ID, newData: Deep<FirestoreDate<T>>) => Promise<SimpleDocument<T, SC>>;
 }
@@ -33,9 +36,7 @@ export function BuildFunctions<T extends object, SC extends Record<string, objec
     create: async (aData: FirestoreDate<T>, customId?: ID) =>
       create<T, SC>(aCollection, anOptions, aData, customId),
     delete: async (anId: ID) => hardDelete(aCollection, anId),
-    find: async () => {
-      throw new Error("Not Implemented!");
-    },
+    find: async (aQuery: SimpleQuery<T>) => find(aCollection, anOptions, aQuery),
     findById: async (anId: ID) => findById<T, SC>(aCollection, anOptions, anId),
     update: async (anId: ID, newData: Deep<FirestoreDate<T>>) =>
       update<T, SC>(aCollection, anOptions, anId, newData)
@@ -90,6 +91,22 @@ async function create<T extends object, SC extends Record<string, object> = {}>(
 
 async function hardDelete(aCollection: CollectionReference, anId: ID) {
   await deleteDoc(doc(aCollection, anId));
+}
+
+async function find<T extends object, SC extends Record<string, object> = {}>(
+  aCollection: CollectionReference,
+  anOptions: CollectionOptions,
+  aQuery: SimpleQuery<T>
+): Promise<QueryResult<T, SC>> {
+  const docsList = await getDocs(formatQuery<T>(aCollection, aQuery));
+  return {
+    length: docsList.docs.length,
+    page: 0,
+    offset: 0,
+    docs: docsList.docs.map((d) =>
+      formatSimpleDocument<T, SC>(d.id, d.data() as AddTimestamps<T>, anOptions, aCollection)
+    )
+  };
 }
 
 async function findById<T extends object, SC extends Record<string, object> = {}>(
