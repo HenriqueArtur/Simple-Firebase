@@ -1,4 +1,10 @@
-import { aOperator, flattenObject, formatAKey, isOperator } from "@src/Firestore/Helpers.js";
+import {
+  aOperator,
+  flattenObject,
+  formatAKey,
+  formatDirection,
+  isOperator
+} from "@src/Firestore/Helpers.js";
 import { describe, expect, it } from "vitest";
 
 describe("Firestore Helpers", () => {
@@ -117,6 +123,16 @@ describe("Firestore Helpers", () => {
 
     it('should "lastKey" NOT was empty', () => {
       expect(formatAKey("currentKey", "nest")).toBe("nest.currentKey");
+    });
+  });
+
+  describe("formatDirection/2", () => {
+    it('should return "asc"', () => {
+      expect(formatDirection("ASC")).toBe("asc");
+    });
+
+    it('should return "desc"', () => {
+      expect(formatDirection("DESC")).toBe("desc");
     });
   });
 });
