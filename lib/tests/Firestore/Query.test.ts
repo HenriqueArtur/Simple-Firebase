@@ -139,4 +139,242 @@ describe("Query", async () => {
       expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
     });
   });
+
+  describe("ATTRIBUTES", () => {
+    it("should return a $NOT query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          nest: {
+            key: { $NOT: "value" }
+          }
+        }
+      };
+      const response = query(aCollection, where("nest.key", "!=", "value"));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a $IN query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          nest: {
+            key: { $IN: ["value", "other_value"] }
+          }
+        }
+      };
+      const response = query(aCollection, where("nest.key", "in", ["value", "other_value"]));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a $NOT_IN query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          nest: {
+            key: { $NOT_IN: ["value", "other_value"] }
+          }
+        }
+      };
+      const response = query(aCollection, where("nest.key", "not-in", ["value", "other_value"]));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a NUMBER $LESS query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          number: { $LESS: 100 }
+        }
+      };
+      const response = query(aCollection, where("number", "<", 100));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a NUMBER $LESS_OR_EQ query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          number: { $LESS_OR_EQ: 100 }
+        }
+      };
+      const response = query(aCollection, where("number", "<=", 100));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a NUMBER $EQ query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          number: { $EQ: 100 }
+        }
+      };
+      const response = query(aCollection, where("number", "==", 100));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a NUMBER $GREATER_OR_EQ query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          number: { $GREATER_OR_EQ: 100 }
+        }
+      };
+      const response = query(aCollection, where("number", ">=", 100));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a NUMBER $GREATER query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          number: { $GREATER: 100 }
+        }
+      };
+      const response = query(aCollection, where("number", ">", 100));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a NUMBER $NOT query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          number: { $NOT: 100 }
+        }
+      };
+      const response = query(aCollection, where("number", "!=", 100));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a TIMESTAMP $LESS query", () => {
+      const currentDate = Timestamp.now();
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          date: { $LESS: currentDate }
+        }
+      };
+      const response = query(aCollection, where("date", "<", currentDate));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a TIMESTAMP $LESS_OR_EQ query", () => {
+      const currentDate = Timestamp.now();
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          date: { $LESS_OR_EQ: currentDate }
+        }
+      };
+      const response = query(aCollection, where("date", "<=", currentDate));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a TIMESTAMP $EQ query", () => {
+      const currentDate = Timestamp.now();
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          date: { $EQ: currentDate }
+        }
+      };
+      const response = query(aCollection, where("date", "==", currentDate));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a TIMESTAMP $GREATER_OR_EQ query", () => {
+      const currentDate = Timestamp.now();
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          date: { $GREATER_OR_EQ: currentDate }
+        }
+      };
+      const response = query(aCollection, where("date", ">=", currentDate));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a TIMESTAMP $GREATER query", () => {
+      const currentDate = Timestamp.now();
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          date: { $GREATER: currentDate }
+        }
+      };
+      const response = query(aCollection, where("date", ">", currentDate));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a TIMESTAMP $NOT query", () => {
+      const currentDate = Timestamp.now();
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          date: { $NOT: currentDate }
+        }
+      };
+      const response = query(aCollection, where("date", "!=", currentDate));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a MULTIPLE attributes query", () => {
+      const currentDate = Timestamp.now();
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          date: {
+            $GREATER: currentDate,
+            $LESS: currentDate
+          },
+          number: 100,
+          name: {
+            $NOT: "value"
+          }
+        }
+      };
+      const response = query(
+        aCollection,
+        where("date", ">", currentDate),
+        where("date", "<", currentDate),
+        where("number", "==", 100),
+        where("name", "!=", "value")
+      );
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return a MULTIPLE attributes query with LOGICAL", () => {
+      const currentDate = Timestamp.now();
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          $AND: {
+            date: {
+              $GREATER: currentDate,
+              $LESS: currentDate
+            },
+            $OR: {
+              number: 100,
+              name: {
+                $NOT: "value"
+              }
+            }
+          }
+        }
+      };
+      const response = query(
+        aCollection,
+        and(
+          where("date", ">", currentDate),
+          where("date", "<", currentDate),
+          or(where("number", "==", 100), where("name", "!=", "value"))
+        )
+      );
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return an $ARRAY_CONTAINS_ANY query", () => {
+      const value = ["value", "otherValue"];
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          anArray: value
+        }
+      };
+      const response = query(aCollection, where("anArray", "array-contains-any", value));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+
+    it("should return an $ARRAY_CONTAINS query", () => {
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          anArray: { $ARRAY_CONTAINS: "value" }
+        }
+      };
+      const response = query(aCollection, where("anArray", "array-contains", "value"));
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+  });
 });
