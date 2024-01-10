@@ -4,7 +4,8 @@ export interface TestData {
   name: string;
   number: number;
   date: Timestamp;
-  anArray: [{ num: number }];
+  anArray: string[];
+  anArrayObj: [{ num: number }];
   nest: {
     key: string;
     key2: string;

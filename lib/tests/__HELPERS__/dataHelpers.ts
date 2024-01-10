@@ -12,7 +12,8 @@ export const TEST_DATA_MOCK: TestData = {
   name: "mock",
   number: 10,
   date: Timestamp.now(),
-  anArray: [{ num: 1 }],
+  anArray: ["array"],
+  anArrayObj: [{ num: 1 }],
   nest: {
     key: "value",
     key2: "value"
