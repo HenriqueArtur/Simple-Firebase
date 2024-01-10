@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { SimpleDocument } from "./SimpleDocument.js";
 
 export type FirestoreDate<T> = {
   [K in keyof T]: T[K] extends Date
@@ -15,4 +16,11 @@ export type FirestoreDate<T> = {
 export type AddTimestamps<T extends object> = T & {
   _createdAt?: Timestamp;
   _updatedAt?: Timestamp;
+};
+
+export type QueryResult<T extends object, SC extends Record<string, object> = {}> = {
+  length: number;
+  page: number;
+  offset: number;
+  docs: SimpleDocument<T, SC>[];
 };
