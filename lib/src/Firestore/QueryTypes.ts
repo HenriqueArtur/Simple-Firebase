@@ -30,10 +30,11 @@ export type SimpleQuery<T extends object> = {
   limit?: number;
 };
 
+// Find one way to make a DISJUNCTION here
 export type Where<T extends object> =
   | { $AND: CompoundQuery<CompoundWithLogicOperators<T>> }
   | { $OR: CompoundQuery<CompoundWithLogicOperators<T>> }
-  | CompoundQuery<CompoundWithoutLogicOperators<T>>;
+  | CompoundWithoutLogicOperators<CompoundQuery<T>>;
 
 export type CompoundWithLogicOperators<T> = {
   [K in keyof T]?: T[K];
@@ -47,7 +48,9 @@ export type CompoundQuery<T> = {
   [K in keyof T]?: K extends LogicalOperators
     ? CompoundQuery<T>
     : T[K] extends (infer U)[]
-    ? CompoundArray<U>
+    ? U extends object | (infer _A)[]
+      ? never
+      : CompoundArray<U>
     : AttributesQuery<T[K]>;
 };
 
