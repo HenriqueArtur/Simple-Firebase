@@ -1,14 +1,59 @@
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
-import { formatQuery } from "@src/Firestore/Query.js";
-import { SimpleQuery } from "@src/Firestore/QueryTypes.js";
+import { formatOrderBy, formatQuery } from "@src/Firestore/Query.js";
+import { OrderBy, SimpleQuery } from "@src/Firestore/QueryTypes.js";
 import { FirebaseObject } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
 import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
-import { Timestamp, and, collection, or, query, where } from "firebase/firestore";
+import { Timestamp, and, collection, or, orderBy, query, where } from "firebase/firestore";
 import { describe, expect, it } from "vitest";
 
 describe("Query", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
   const aCollection = collection(FIRESTORE_WEB, "test");
+
+  describe("COMPLEX QUERY", () => {
+    it("should return WHERE and ORDER_BY", () => {
+      const currentDate = Timestamp.now();
+      const aQuery: SimpleQuery<TestData> = {
+        where: {
+          $AND: {
+            nest: {
+              key2: {
+                $EQ: "value"
+              }
+            },
+            date: {
+              $GREATER: currentDate,
+              $LESS: currentDate
+            },
+            $OR: {
+              number: 100,
+              name: {
+                $NOT: "value"
+              }
+            }
+          }
+        },
+        orderBy: {
+          name: "DESC",
+          nest: {
+            key2: "ASC"
+          }
+        }
+      };
+      const response = query(
+        aCollection,
+        and(
+          where("nest.key2", "==", "value"),
+          where("date", ">", currentDate),
+          where("date", "<", currentDate),
+          or(where("number", "==", 100), where("name", "!=", "value"))
+        ),
+        orderBy("name", "desc"),
+        orderBy("nest.key2", "asc")
+      );
+      expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+  });
 
   describe("ERRORS", () => {
     it('should be "where" empty', () => {
@@ -375,6 +420,55 @@ describe("Query", async () => {
       };
       const response = query(aCollection, where("anArray", "array-contains", "value"));
       expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
+    });
+  });
+
+  describe("formatOrderBy/2", () => {
+    it("should return empty array", () => {
+      const anOrder: OrderBy<TestData> = {};
+      const response: any[] = [];
+      expect(formatOrderBy(anOrder)).toStrictEqual(response);
+    });
+
+    it('should order name "ASC"', () => {
+      const anOrder: OrderBy<TestData> = {
+        name: "ASC"
+      };
+      const response = [orderBy("name", "asc")];
+      expect(formatOrderBy(anOrder)).toStrictEqual(response);
+    });
+
+    it('should order name "DESC"', () => {
+      const anOrder: OrderBy<TestData> = {
+        name: "DESC"
+      };
+      const response = [orderBy("name", "desc")];
+      expect(formatOrderBy(anOrder)).toStrictEqual(response);
+    });
+
+    it('should order nest.key "ASC"', () => {
+      const anOrder: OrderBy<TestData> = {
+        nest: { key: "ASC" }
+      };
+      const response = [orderBy("nest.key", "asc")];
+      expect(formatOrderBy(anOrder)).toStrictEqual(response);
+    });
+
+    it('should order nest.key "DESC"', () => {
+      const anOrder: OrderBy<TestData> = {
+        nest: { key: "DESC" }
+      };
+      const response = [orderBy("nest.key", "desc")];
+      expect(formatOrderBy(anOrder)).toStrictEqual(response);
+    });
+
+    it("should MULTIPLE orders", () => {
+      const anOrder: OrderBy<TestData> = {
+        name: "DESC",
+        nest: { key: "ASC" }
+      };
+      const response = [orderBy("name", "desc"), orderBy("nest.key", "asc")];
+      expect(formatOrderBy(anOrder)).toStrictEqual(response);
     });
   });
 });
