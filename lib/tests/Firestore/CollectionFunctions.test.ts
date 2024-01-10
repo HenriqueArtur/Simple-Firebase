@@ -6,6 +6,7 @@ import { BuildFunctions } from "@src/Firestore/CollectionFunctions.js";
 import { SubColTestData, TestData } from "@tests/__HELPERS__/typeHelpers.js";
 import { TEST_DATA_MOCK, TEST_DEFAULT_OPTIONS } from "@tests/__HELPERS__/dataHelpers.js";
 import { registerTestData } from "@tests/__HELPERS__/registerData.js";
+import { TestDataMock } from "@tests/__MOCKS__/TestDataMock.js";
 
 describe("Collections Functions", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
@@ -150,6 +151,44 @@ describe("Collections Functions", async () => {
           expect(aNewData.updatedAt).not.toBeUndefined();
           expect(aNewData.createdAt).not.toBeUndefined();
         });
+      });
+    });
+
+    describe("find/1", () => {
+      const FUNCTIONS = BuildFunctions<TestData>(aCollection, TEST_DEFAULT_OPTIONS);
+
+      it("should not find any document", async () => {
+        const response = await FUNCTIONS.find({
+          where: {
+            name: "banana"
+          }
+        });
+        expect(response.length).toBe(0);
+        expect(response.page).toBe(0);
+        expect(response.offset).toBe(0);
+        expect(response.docs).toHaveLength(0);
+      });
+
+      it("should find 2 document", async () => {
+        await Promise.all([
+          FUNCTIONS.create(TestDataMock({ number: 5 })),
+          FUNCTIONS.create(TestDataMock({ number: 20 })),
+          FUNCTIONS.create(TestDataMock({ number: 50 })),
+          FUNCTIONS.create(TestDataMock({ number: 95 }))
+        ]);
+
+        const response = await FUNCTIONS.find({
+          where: {
+            number: {
+              $GREATER: 10,
+              $LESS: 90
+            }
+          }
+        });
+        expect(response.length).toBe(2);
+        expect(response.page).toBe(0);
+        expect(response.offset).toBe(0);
+        expect(response.docs).toHaveLength(2);
       });
     });
 
