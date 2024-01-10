@@ -197,6 +197,7 @@ describe("Collections Functions", async () => {
         expect(anUpdatedDoc.data).toStrictEqual({
           ...aDoc.data,
           nest: {
+            ...aDoc.data.nest,
             key: newValue
           }
         });
