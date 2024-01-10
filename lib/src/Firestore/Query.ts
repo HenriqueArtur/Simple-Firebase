@@ -23,7 +23,7 @@ function validateWhere(aWhere: object) {
   }
 }
 
-function formatWhere(aWhere: object, lastKey = ""): any[] {
+export function formatWhere(aWhere: object, lastKey = ""): any[] {
   let filters = [];
   for (const [key, value] of Object.entries(aWhere)) {
     if (key == "$OR") {
