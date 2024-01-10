@@ -7,7 +7,7 @@ import {
   query,
   where
 } from "firebase/firestore";
-import { AttributeOperators, SimpleQuery, Where } from "./QueryTypes.js";
+import { AttributeOperators, SimpleQuery } from "./QueryTypes.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 
 export function formatQuery<T extends object>(
@@ -30,7 +30,7 @@ function validateWhere(aWhere: object) {
   }
 }
 
-function formatWhere(aWhere: object): any[] {
+function formatWhere(aWhere: object, lastKey = ""): any[] {
   let filters = [];
   for (const [key, value] of Object.entries(aWhere)) {
     if (key == "$OR") {
@@ -41,12 +41,46 @@ function formatWhere(aWhere: object): any[] {
       filters.push(and(...formatWhere(value)));
       continue;
     }
-    if (value instanceof Timestamp || typeof value != "object") {
-      filters.push(where(key, "==", value));
+    if (isOperator(key)) {
+      filters.push(where(lastKey, aOperator(key as AttributeOperators), value));
+      continue;
+    }
+    if (Array.isArray(value)) {
+      filters.push(where(formatAKey(key, lastKey), "array-contains-any", value));
+      continue;
+    }
+    if (
+      typeof value === "string" ||
+      typeof value === "boolean" ||
+      typeof value === "number" ||
+      typeof value === "bigint" ||
+      value === null ||
+      value instanceof Timestamp
+    ) {
+      filters.push(where(formatAKey(key, lastKey), "==", value));
+      continue;
+    }
+    if (typeof value === "object") {
+      filters.push(...formatWhere(value, formatAKey(key, lastKey)));
       continue;
     }
   }
   return filters;
+}
+
+function isOperator(key: string) {
+  return [
+    "$LESS",
+    "$LESS_OR_EQ",
+    "$EQ",
+    "$GREATER_OR_EQ",
+    "$GREATER",
+    "$ARRAY_CONTAINS",
+    "$ARRAY_CONTAINS_ANY",
+    "$IN",
+    "$NOT_IN",
+    "$NOT"
+  ].includes(key);
 }
 
 function aOperator(key: AttributeOperators): WhereFilterOp {
@@ -73,3 +107,6 @@ function aOperator(key: AttributeOperators): WhereFilterOp {
       return "!=";
   }
 }
+
+const formatAKey = (currentKey: string, lastKey: string) =>
+  lastKey == "" ? currentKey : `${lastKey}.${currentKey}`;
