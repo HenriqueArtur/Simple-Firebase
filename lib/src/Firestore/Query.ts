@@ -1,14 +1,7 @@
-import {
-  CollectionReference,
-  Timestamp,
-  WhereFilterOp,
-  and,
-  or,
-  query,
-  where
-} from "firebase/firestore";
+import { CollectionReference, Timestamp, and, or, query, where } from "firebase/firestore";
 import { AttributeOperators, SimpleQuery } from "./QueryTypes.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
+import { aOperator, formatAKey, isOperator } from "./Helpers.js";
 
 export function formatQuery<T extends object>(
   aCollection: CollectionReference,
@@ -67,46 +60,3 @@ function formatWhere(aWhere: object, lastKey = ""): any[] {
   }
   return filters;
 }
-
-function isOperator(key: string) {
-  return [
-    "$LESS",
-    "$LESS_OR_EQ",
-    "$EQ",
-    "$GREATER_OR_EQ",
-    "$GREATER",
-    "$ARRAY_CONTAINS",
-    "$ARRAY_CONTAINS_ANY",
-    "$IN",
-    "$NOT_IN",
-    "$NOT"
-  ].includes(key);
-}
-
-function aOperator(key: AttributeOperators): WhereFilterOp {
-  switch (key) {
-    case "$LESS":
-      return "<";
-    case "$LESS_OR_EQ":
-      return "<=";
-    case "$EQ":
-      return "==";
-    case "$GREATER":
-      return ">";
-    case "$GREATER_OR_EQ":
-      return ">=";
-    case "$ARRAY_CONTAINS":
-      return "array-contains";
-    case "$ARRAY_CONTAINS_ANY":
-      return "array-contains-any";
-    case "$IN":
-      return "in";
-    case "$NOT_IN":
-      return "not-in";
-    case "$NOT":
-      return "!=";
-  }
-}
-
-const formatAKey = (currentKey: string, lastKey: string) =>
-  lastKey == "" ? currentKey : `${lastKey}.${currentKey}`;
