@@ -1,4 +1,13 @@
-import { CollectionReference, Timestamp, and, or, orderBy, query, where } from "firebase/firestore";
+import {
+  CollectionReference,
+  Timestamp,
+  and,
+  limit,
+  or,
+  orderBy,
+  query,
+  where
+} from "firebase/firestore";
 import { AnOrderByDirection, AttributeOperators, SimpleQuery } from "./QueryTypes.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 import { aOperator, formatAKey, formatDirection, isOperator } from "./Helpers.js";
@@ -8,7 +17,14 @@ export function formatQuery<T extends object>(
   aQuery: SimpleQuery<T>
 ) {
   validateWhere(aQuery.where);
-  return query(aCollection, ...[...formatWhere(aQuery.where), ...formatOrderBy(aQuery.orderBy)]);
+  return query(
+    aCollection,
+    ...[
+      ...formatWhere(aQuery.where),
+      ...formatOrderBy(aQuery.orderBy),
+      ...formatALimit(aQuery.limit)
+    ]
+  );
 }
 
 function validateWhere(aWhere: object) {
@@ -72,4 +88,8 @@ export function formatOrderBy(anOrder?: object, lastKey = ""): any[] {
     order.push(orderBy(formatAKey(key, lastKey), formatDirection(value as AnOrderByDirection)));
   }
   return order;
+}
+
+export function formatALimit(aLimit?: number) {
+  return !aLimit ? [] : [limit(aLimit)];
 }
