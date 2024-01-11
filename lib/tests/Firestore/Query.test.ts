@@ -1,9 +1,9 @@
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
-import { formatOrderBy, formatQuery, formatWhere } from "@src/Firestore/Query.js";
+import { formatALimit, formatOrderBy, formatQuery, formatWhere } from "@src/Firestore/Query.js";
 import { OrderBy, SimpleQuery, Where } from "@src/Firestore/QueryTypes.js";
 import { FirebaseObject } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
 import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
-import { Timestamp, and, collection, or, orderBy, query, where } from "firebase/firestore";
+import { Timestamp, and, collection, limit, or, orderBy, query, where } from "firebase/firestore";
 import { describe, expect, it } from "vitest";
 
 describe("Query", async () => {
@@ -11,7 +11,7 @@ describe("Query", async () => {
   const aCollection = collection(FIRESTORE_WEB, "test");
 
   describe("COMPLEX QUERY", () => {
-    it("should return WHERE and ORDER_BY", () => {
+    it("should return WHERE, ORDER_BY and LIMIT", () => {
       const currentDate = Timestamp.now();
       const aQuery: SimpleQuery<TestData> = {
         where: {
@@ -38,7 +38,8 @@ describe("Query", async () => {
           nest: {
             key2: "ASC"
           }
-        }
+        },
+        limit: 100
       };
       const response = query(
         aCollection,
@@ -49,7 +50,8 @@ describe("Query", async () => {
           or(where("number", "==", 100), where("name", "!=", "value"))
         ),
         orderBy("name", "desc"),
-        orderBy("nest.key2", "asc")
+        orderBy("nest.key2", "asc"),
+        limit(100)
       );
       expect(formatQuery<TestData>(aCollection, aQuery)).toStrictEqual(response);
     });
@@ -416,6 +418,16 @@ describe("Query", async () => {
       };
       const response = [orderBy("name", "desc"), orderBy("nest.key", "asc")];
       expect(formatOrderBy(anOrder)).toStrictEqual(response);
+    });
+  });
+
+  describe("formatALimit/1", () => {
+    it("should return empty limit", () => {
+      expect(formatALimit()).toStrictEqual([]);
+    });
+
+    it("should return a filled limit", () => {
+      expect(formatALimit(100)).toStrictEqual([limit(100)]);
     });
   });
 });
