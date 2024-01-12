@@ -11,13 +11,14 @@ import {
   updateDoc
 } from "firebase/firestore";
 import { CollectionOptions } from "./Collection.js";
-import { AddTimestamps, FirestoreDate, QueryResult } from "./FirestoreTypes.js";
+import { AddTimestamps, FirestoreDate, QueryResult, QueryResultData } from "./FirestoreTypes.js";
 import { Deep, ID } from "@src/types.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 import { SimpleDocument, formatSimpleDocument } from "./SimpleDocument.js";
 import { flattenObject } from "./Helpers.js";
 import { SimpleQuery } from "./QueryTypes.js";
 import { formatQuery } from "./Query.js";
+import { NextPage, defineACursor } from "./Pagination.js";
 
 /* MAIN */
 export interface CollectionFunctions<T extends object, SC extends Record<string, object> = {}> {
@@ -98,14 +99,26 @@ async function find<T extends object, SC extends Record<string, object> = {}>(
   anOptions: CollectionOptions,
   aQuery: SimpleQuery<T>
 ): Promise<QueryResult<T, SC>> {
-  const docsList = await getDocs(formatQuery<T>(aCollection, aQuery));
-  return {
-    length: docsList.docs.length,
-    page: 0,
-    offset: 0,
+  const currentQuery = formatQuery<T>(aCollection, aQuery);
+  const docsList = await getDocs(currentQuery);
+  const aCursor = defineACursor(docsList);
+  const docsFoundUntilNow = docsList.docs.length;
+  const page = 0;
+  const limit = aQuery.limit ?? "ALL";
+  const isLastPage = limit == "ALL" || docsList.docs.length < limit;
+  const aResult: QueryResultData<T, SC> = {
+    docsFoundUntilNow,
+    page,
+    limit,
+    isLastPage,
     docs: docsList.docs.map((d) =>
       formatSimpleDocument<T, SC>(d.id, d.data() as AddTimestamps<T>, anOptions, aCollection)
     )
+  };
+  return {
+    ...aResult,
+    nextPage: () =>
+      NextPage(currentQuery, docsFoundUntilNow, page, limit, aCursor, aCollection, anOptions)
   };
 }
 
