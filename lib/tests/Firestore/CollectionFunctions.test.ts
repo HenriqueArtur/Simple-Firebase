@@ -7,6 +7,7 @@ import { SubColTestData, TestData } from "@tests/__HELPERS__/typeHelpers.js";
 import { TEST_DATA_MOCK, TEST_DEFAULT_OPTIONS } from "@tests/__HELPERS__/dataHelpers.js";
 import { registerTestData } from "@tests/__HELPERS__/registerData.js";
 import { TestDataMock } from "@tests/__MOCKS__/TestDataMock.js";
+import { SimpleFirebaseFirestoreLastPageError } from "@src/Errors/SimpleFirebaseFirestoreLastPageError.js";
 
 describe("Collections Functions", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
@@ -163,10 +164,12 @@ describe("Collections Functions", async () => {
             name: "banana"
           }
         });
-        expect(response.length).toBe(0);
+        expect(response.docsFoundUntilNow).toBe(0);
         expect(response.page).toBe(0);
-        expect(response.offset).toBe(0);
+        expect(response.limit).toBe("ALL");
+        expect(response.isLastPage).toBe(true);
         expect(response.docs).toHaveLength(0);
+        expect(response.nextPage).toBeTypeOf("function");
       });
 
       it("should find 2 document", async () => {
@@ -185,10 +188,127 @@ describe("Collections Functions", async () => {
             }
           }
         });
-        expect(response.length).toBe(2);
+        expect(response.docsFoundUntilNow).toBe(2);
         expect(response.page).toBe(0);
-        expect(response.offset).toBe(0);
+        expect(response.limit).toBe("ALL");
+        expect(response.isLastPage).toBe(true);
         expect(response.docs).toHaveLength(2);
+        expect(response.nextPage).toBeTypeOf("function");
+      });
+
+      it("should find 1 document paginate with limit 1", async () => {
+        await Promise.all([
+          FUNCTIONS.create(TestDataMock({ number: 5 })),
+          FUNCTIONS.create(TestDataMock({ number: 20 })),
+          FUNCTIONS.create(TestDataMock({ number: 50 })),
+          FUNCTIONS.create(TestDataMock({ number: 95 }))
+        ]);
+
+        const response = await FUNCTIONS.find({
+          where: {
+            number: {
+              $GREATER: 10,
+              $LESS: 90
+            }
+          },
+          orderBy: {
+            number: "ASC"
+          },
+          limit: 1
+        });
+        expect(response.docsFoundUntilNow).toBe(1);
+        expect(response.page).toBe(0);
+        expect(response.limit).toBe(1);
+        expect(response.isLastPage).toBe(false);
+        expect(response.docs).toHaveLength(1);
+      });
+
+      it("should find document on next page 1 paginate with limit 1", async () => {
+        await Promise.all([
+          FUNCTIONS.create(TestDataMock({ number: 5 })),
+          FUNCTIONS.create(TestDataMock({ number: 20 })),
+          FUNCTIONS.create(TestDataMock({ number: 50 })),
+          FUNCTIONS.create(TestDataMock({ number: 95 }))
+        ]);
+
+        const aLastResponse = await FUNCTIONS.find({
+          where: {
+            number: {
+              $GREATER: 10,
+              $LESS: 90
+            }
+          },
+          orderBy: {
+            number: "ASC"
+          },
+          limit: 1
+        });
+        const response = await aLastResponse.nextPage();
+        expect(response.docsFoundUntilNow).toBe(2);
+        expect(response.page).toBe(1);
+        expect(response.limit).toBe(1);
+        expect(response.isLastPage).toBe(false);
+        expect(response.docs).toHaveLength(1);
+      });
+
+      it("should the last page has arrived", async () => {
+        await Promise.all([
+          FUNCTIONS.create(TestDataMock({ number: 15 })),
+          FUNCTIONS.create(TestDataMock({ number: 120 })),
+          FUNCTIONS.create(TestDataMock({ number: 150 })),
+          FUNCTIONS.create(TestDataMock({ number: 195 }))
+        ]);
+
+        const aMoreLastResponse = await FUNCTIONS.find({
+          where: {
+            number: {
+              $GREATER: 110,
+              $LESS: 190
+            }
+          },
+          orderBy: {
+            number: "ASC"
+          },
+          limit: 1
+        });
+        const aLastResponse = await aMoreLastResponse.nextPage();
+        const response = await aLastResponse.nextPage();
+        expect(response.docsFoundUntilNow).toBe(2);
+        expect(response.page).toBe(2);
+        expect(response.limit).toBe(1);
+        expect(response.isLastPage).toBe(true);
+        expect(response.docs).toHaveLength(0);
+      });
+
+      it("should throw error if last page arrive in last interaction", async () => {
+        await Promise.all([
+          FUNCTIONS.create(TestDataMock({ number: 25 })),
+          FUNCTIONS.create(TestDataMock({ number: 220 })),
+          FUNCTIONS.create(TestDataMock({ number: 250 })),
+          FUNCTIONS.create(TestDataMock({ number: 295 }))
+        ]);
+
+        const aMoreMoreLastResponse = await FUNCTIONS.find({
+          where: {
+            number: {
+              $GREATER: 210,
+              $LESS: 290
+            }
+          },
+          orderBy: {
+            number: "ASC"
+          },
+          limit: 1
+        });
+        const aMoreLastResponse = await aMoreMoreLastResponse.nextPage();
+        const aLastResponse = await aMoreLastResponse.nextPage();
+        const error = new SimpleFirebaseFirestoreLastPageError();
+        try {
+          expect(await aLastResponse.nextPage()).toThrow(error);
+        } catch (err: any) {
+          expect(err).toHaveProperty("message");
+          expect(err.message).toBe(error.message);
+        }
       });
     });
 
