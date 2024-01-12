@@ -22,11 +22,11 @@ import { NextPage, defineACursor } from "./Pagination.js";
 
 /* MAIN */
 export interface CollectionFunctions<T extends object, SC extends Record<string, object> = {}> {
-  create: (aData: FirestoreDate<T>, customId?: ID) => Promise<SimpleDocument<T, SC>>;
-  delete: (anId: ID) => Promise<void>;
-  find: (aQuery: SimpleQuery<T>) => Promise<QueryResult<T, SC>>;
-  findById: (anId: ID) => Promise<SimpleDocument<T, SC> | undefined>;
-  update: (anId: ID, newData: Deep<FirestoreDate<T>>) => Promise<SimpleDocument<T, SC>>;
+  create(aData: FirestoreDate<T>, customId?: ID): Promise<SimpleDocument<T, SC>>;
+  delete(anId: ID): Promise<void>;
+  find(aQuery: SimpleQuery<T>): Promise<QueryResult<T, SC>>;
+  findById(anId: ID): Promise<SimpleDocument<T, SC> | undefined>;
+  update(anId: ID, newData: Deep<FirestoreDate<T>>): Promise<SimpleDocument<T, SC>>;
 }
 
 export function BuildFunctions<T extends object, SC extends Record<string, object> = {}>(

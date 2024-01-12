@@ -14,8 +14,8 @@ export type FirestoreDate<T> = {
 };
 
 export type AddTimestamps<T extends object> = T & {
-  _createdAt?: Timestamp;
-  _updatedAt?: Timestamp;
+  readonly _createdAt?: Timestamp;
+  readonly _updatedAt?: Timestamp;
 };
 
 export type QueryResult<T extends object, SC extends Record<string, object> = {}> = QueryResultData<

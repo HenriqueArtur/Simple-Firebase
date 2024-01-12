@@ -5,11 +5,11 @@ import { CollectionFunctions } from "./CollectionFunctions.js";
 import { CollectionOptions, SubCollection } from "./Collection.js";
 
 export interface SimpleDocument<T extends object, SC extends Record<string, object> = {}> {
-  id: ID;
-  data: T;
-  createdAt: Timestamp | undefined;
-  updatedAt: Timestamp | undefined;
-  subCollection: (aPath: keyof SC) => CollectionFunctions<SC[keyof SC]>;
+  readonly id: ID;
+  readonly data: T;
+  readonly createdAt: Timestamp | undefined;
+  readonly updatedAt: Timestamp | undefined;
+  subCollection(aPath: keyof SC): CollectionFunctions<SC[keyof SC]>;
 }
 
 export function formatSimpleDocument<T extends object, SC extends Record<string, object> = {}>(
