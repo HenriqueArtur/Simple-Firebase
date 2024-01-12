@@ -173,7 +173,7 @@ describe("Collections Functions", async () => {
 
       it("should find 2 document", async () => {
         await Promise.all([
-          FUNCTIONS.create(TestDataMock({ number: 5 })),
+          FUNCTIONS.create(TestDataMock({ number: 0 })),
           FUNCTIONS.create(TestDataMock({ number: 20 })),
           FUNCTIONS.create(TestDataMock({ number: 50 })),
           FUNCTIONS.create(TestDataMock({ number: 95 }))
@@ -197,17 +197,17 @@ describe("Collections Functions", async () => {
 
       it("should find 1 document paginate with limit 1", async () => {
         await Promise.all([
-          FUNCTIONS.create(TestDataMock({ number: 5 })),
-          FUNCTIONS.create(TestDataMock({ number: 20 })),
-          FUNCTIONS.create(TestDataMock({ number: 50 })),
-          FUNCTIONS.create(TestDataMock({ number: 95 }))
+          FUNCTIONS.create(TestDataMock({ number: 1 })),
+          FUNCTIONS.create(TestDataMock({ number: 120 })),
+          FUNCTIONS.create(TestDataMock({ number: 150 })),
+          FUNCTIONS.create(TestDataMock({ number: 195 }))
         ]);
 
         const response = await FUNCTIONS.find({
           where: {
             number: {
-              $GREATER: 10,
-              $LESS: 90
+              $GREATER: 110,
+              $LESS: 190
             }
           },
           orderBy: {
