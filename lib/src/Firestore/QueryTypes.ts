@@ -26,7 +26,6 @@ export type QueryOperators = LogicalOperators | AttributeOperators;
 export type SimpleQuery<T extends object> = {
   where: Where<T>;
   orderBy?: OrderBy<T>;
-  offset?: number;
   limit?: number;
 };
 

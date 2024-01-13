@@ -11,21 +11,22 @@ import {
   updateDoc
 } from "firebase/firestore";
 import { CollectionOptions } from "./Collection.js";
-import { AddTimestamps, FirestoreDate, QueryResult } from "./FirestoreTypes.js";
+import { FirestoreDate, QueryResult, QueryResultData } from "./FirestoreTypes.js";
 import { Deep, ID } from "@src/types.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 import { SimpleDocument, formatSimpleDocument } from "./SimpleDocument.js";
 import { flattenObject } from "./Helpers.js";
 import { SimpleQuery } from "./QueryTypes.js";
 import { formatQuery } from "./Query.js";
+import { NextPage, defineACursor } from "./Pagination.js";
 
 /* MAIN */
 export interface CollectionFunctions<T extends object, SC extends Record<string, object> = {}> {
-  create: (aData: FirestoreDate<T>, customId?: ID) => Promise<SimpleDocument<T, SC>>;
-  delete: (anId: ID) => Promise<void>;
-  find: (aQuery: SimpleQuery<T>) => Promise<QueryResult<T, SC>>;
-  findById: (anId: ID) => Promise<SimpleDocument<T, SC> | undefined>;
-  update: (anId: ID, newData: Deep<FirestoreDate<T>>) => Promise<SimpleDocument<T, SC>>;
+  create(aData: FirestoreDate<T>, customId?: ID): Promise<SimpleDocument<T, SC>>;
+  delete(anId: ID): Promise<void>;
+  find(aQuery: SimpleQuery<T>): Promise<QueryResult<T, SC>>;
+  findById(anId: ID): Promise<SimpleDocument<T, SC> | undefined>;
+  update(anId: ID, newData: Deep<FirestoreDate<T>>): Promise<SimpleDocument<T, SC>>;
 }
 
 export function BuildFunctions<T extends object, SC extends Record<string, object> = {}>(
@@ -80,13 +81,11 @@ async function create<T extends object, SC extends Record<string, object> = {}>(
     }
     await setDoc<DocumentData, DocumentData>(aDocRef, aDataToCreate);
     const aDocSnap = await getDoc(aDocRef);
-    const aNewData = aDocSnap.data() as AddTimestamps<T>;
-    return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
+    return formatSimpleDocument<T, SC>(aDocSnap, anOptions, aCollection);
   }
   const aDocRef = await addDoc<DocumentData, DocumentData>(aCollection, aDataToCreate);
   const aDocSnap = await getDoc(aDocRef);
-  const aNewData = aDocSnap.data() as AddTimestamps<T>;
-  return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
+  return formatSimpleDocument<T, SC>(aDocSnap, anOptions, aCollection);
 }
 
 async function hardDelete(aCollection: CollectionReference, anId: ID) {
@@ -98,14 +97,24 @@ async function find<T extends object, SC extends Record<string, object> = {}>(
   anOptions: CollectionOptions,
   aQuery: SimpleQuery<T>
 ): Promise<QueryResult<T, SC>> {
-  const docsList = await getDocs(formatQuery<T>(aCollection, aQuery));
+  const currentQuery = formatQuery<T>(aCollection, aQuery);
+  const docsList = await getDocs(currentQuery);
+  const aCursor = defineACursor(docsList);
+  const docsFoundUntilNow = docsList.docs.length;
+  const page = 0;
+  const limit = aQuery.limit ?? "ALL";
+  const isLastPage = limit == "ALL" || docsList.docs.length < limit;
+  const aResult: QueryResultData<T, SC> = {
+    docsFoundUntilNow,
+    page,
+    limit,
+    isLastPage,
+    docs: docsList.docs.map((d) => formatSimpleDocument<T, SC>(d, anOptions, aCollection))
+  };
   return {
-    length: docsList.docs.length,
-    page: 0,
-    offset: 0,
-    docs: docsList.docs.map((d) =>
-      formatSimpleDocument<T, SC>(d.id, d.data() as AddTimestamps<T>, anOptions, aCollection)
-    )
+    ...aResult,
+    nextPage: () =>
+      NextPage(currentQuery, docsFoundUntilNow, page, limit, aCursor, aCollection, anOptions)
   };
 }
 
@@ -119,8 +128,7 @@ async function findById<T extends object, SC extends Record<string, object> = {}
   if (!aDocSnap.exists()) {
     return undefined;
   }
-  const aNewData = aDocSnap.data() as AddTimestamps<T>;
-  return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
+  return formatSimpleDocument<T, SC>(aDocSnap, anOptions, aCollection);
 }
 
 async function update<T extends object, SC extends Record<string, object> = {}>(
@@ -138,6 +146,5 @@ async function update<T extends object, SC extends Record<string, object> = {}>(
   const aDocRef = doc(aCollection, anId);
   await updateDoc(aDocRef, flattenObject(aDataToUpdate));
   const aDocSnap = await getDoc(aDocRef);
-  const aDocUpdated = aDocSnap.data() as AddTimestamps<T>;
-  return formatSimpleDocument<T, SC>(aDocSnap.id, aDocUpdated, anOptions, aCollection);
+  return formatSimpleDocument<T, SC>(aDocSnap, anOptions, aCollection);
 }

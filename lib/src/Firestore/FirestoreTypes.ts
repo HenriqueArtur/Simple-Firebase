@@ -14,13 +14,24 @@ export type FirestoreDate<T> = {
 };
 
 export type AddTimestamps<T extends object> = T & {
-  _createdAt?: Timestamp;
-  _updatedAt?: Timestamp;
+  readonly _createdAt?: Timestamp;
+  readonly _updatedAt?: Timestamp;
 };
 
-export type QueryResult<T extends object, SC extends Record<string, object> = {}> = {
-  length: number;
-  page: number;
-  offset: number;
-  docs: SimpleDocument<T, SC>[];
+export type QueryResult<T extends object, SC extends Record<string, object> = {}> = QueryResultData<
+  T,
+  SC
+> &
+  QueryResultFunctions<T, SC>;
+
+export type QueryResultData<T extends object, SC extends Record<string, object> = {}> = {
+  readonly docsFoundUntilNow: number;
+  readonly page: number;
+  readonly limit: number | "ALL";
+  readonly isLastPage: boolean;
+  readonly docs: SimpleDocument<T, SC>[];
+};
+
+export type QueryResultFunctions<T extends object, SC extends Record<string, object> = {}> = {
+  nextPage(): Promise<QueryResult<T, SC>>;
 };
