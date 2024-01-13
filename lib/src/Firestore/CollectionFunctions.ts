@@ -11,7 +11,7 @@ import {
   updateDoc
 } from "firebase/firestore";
 import { CollectionOptions } from "./Collection.js";
-import { AddTimestamps, FirestoreDate, QueryResult, QueryResultData } from "./FirestoreTypes.js";
+import { FirestoreDate, QueryResult, QueryResultData } from "./FirestoreTypes.js";
 import { Deep, ID } from "@src/types.js";
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 import { SimpleDocument, formatSimpleDocument } from "./SimpleDocument.js";
@@ -81,13 +81,11 @@ async function create<T extends object, SC extends Record<string, object> = {}>(
     }
     await setDoc<DocumentData, DocumentData>(aDocRef, aDataToCreate);
     const aDocSnap = await getDoc(aDocRef);
-    const aNewData = aDocSnap.data() as AddTimestamps<T>;
-    return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
+    return formatSimpleDocument<T, SC>(aDocSnap, anOptions, aCollection);
   }
   const aDocRef = await addDoc<DocumentData, DocumentData>(aCollection, aDataToCreate);
   const aDocSnap = await getDoc(aDocRef);
-  const aNewData = aDocSnap.data() as AddTimestamps<T>;
-  return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
+  return formatSimpleDocument<T, SC>(aDocSnap, anOptions, aCollection);
 }
 
 async function hardDelete(aCollection: CollectionReference, anId: ID) {
@@ -111,9 +109,7 @@ async function find<T extends object, SC extends Record<string, object> = {}>(
     page,
     limit,
     isLastPage,
-    docs: docsList.docs.map((d) =>
-      formatSimpleDocument<T, SC>(d.id, d.data() as AddTimestamps<T>, anOptions, aCollection)
-    )
+    docs: docsList.docs.map((d) => formatSimpleDocument<T, SC>(d, anOptions, aCollection))
   };
   return {
     ...aResult,
@@ -132,8 +128,7 @@ async function findById<T extends object, SC extends Record<string, object> = {}
   if (!aDocSnap.exists()) {
     return undefined;
   }
-  const aNewData = aDocSnap.data() as AddTimestamps<T>;
-  return formatSimpleDocument<T, SC>(aDocSnap.id, aNewData, anOptions, aCollection);
+  return formatSimpleDocument<T, SC>(aDocSnap, anOptions, aCollection);
 }
 
 async function update<T extends object, SC extends Record<string, object> = {}>(
@@ -151,6 +146,5 @@ async function update<T extends object, SC extends Record<string, object> = {}>(
   const aDocRef = doc(aCollection, anId);
   await updateDoc(aDocRef, flattenObject(aDataToUpdate));
   const aDocSnap = await getDoc(aDocRef);
-  const aDocUpdated = aDocSnap.data() as AddTimestamps<T>;
-  return formatSimpleDocument<T, SC>(aDocSnap.id, aDocUpdated, anOptions, aCollection);
+  return formatSimpleDocument<T, SC>(aDocSnap, anOptions, aCollection);
 }

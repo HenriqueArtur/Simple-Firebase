@@ -7,7 +7,7 @@ import {
   query,
   startAfter
 } from "firebase/firestore";
-import { AddTimestamps, QueryResult } from "./FirestoreTypes.js";
+import { QueryResult } from "./FirestoreTypes.js";
 import { SimpleFirebaseFirestoreLastPageError } from "@src/Errors/SimpleFirebaseFirestoreLastPageError.js";
 import { formatSimpleDocument } from "./SimpleDocument.js";
 import { CollectionOptions } from "./Collection.js";
@@ -34,9 +34,7 @@ export async function NextPage<T extends object, SC extends Record<string, objec
     page,
     limit: aLimit,
     isLastPage: docsList.docs.length < aLimit,
-    docs: docsList.docs.map((d) =>
-      formatSimpleDocument<T, SC>(d.id, d.data() as AddTimestamps<T>, anOptions, aCollection)
-    ),
+    docs: docsList.docs.map((d) => formatSimpleDocument<T, SC>(d, anOptions, aCollection)),
     nextPage: () =>
       NextPage(aLastQuery, docsFoundUntilNow, page, aLimit, aNewCursor, aCollection, anOptions)
   };
