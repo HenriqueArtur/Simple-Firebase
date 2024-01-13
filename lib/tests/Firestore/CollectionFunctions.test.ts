@@ -1,6 +1,6 @@
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 import { FirebaseObject, cleanCollections } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
-import { Timestamp, collection, doc, setDoc } from "firebase/firestore";
+import { DocumentSnapshot, Timestamp, collection, doc, setDoc } from "firebase/firestore";
 import { afterAll, describe, expect, it } from "vitest";
 import { BuildFunctions } from "@src/Firestore/CollectionFunctions.js";
 import { SubColTestData, TestData } from "@tests/__HELPERS__/typeHelpers.js";
@@ -42,12 +42,13 @@ describe("Collections Functions", async () => {
 
         it("should create a data successfully", async () => {
           const aNewData = await REPO_DEFAULT.create(TEST_DATA_MOCK);
-          expect(Object.keys(aNewData)).toHaveLength(5);
+          expect(Object.keys(aNewData)).toHaveLength(6);
           expect(aNewData).toHaveProperty("id");
           expect(aNewData).toHaveProperty("data");
           expect(aNewData).toHaveProperty("subCollection");
           expect(aNewData).toHaveProperty("createdAt");
           expect(aNewData).toHaveProperty("updatedAt");
+          expect(aNewData).toHaveProperty("originalDoc");
           expect(aNewData.id.length > 0).toBe(true);
           expect(aNewData.data.name).toStrictEqual(TEST_DATA_MOCK.name);
           expect(aNewData.data.anArray).toStrictEqual(TEST_DATA_MOCK.anArray);
@@ -55,6 +56,7 @@ describe("Collections Functions", async () => {
           expect(aNewData.subCollection).toBeTypeOf("function");
           expect(aNewData.updatedAt).instanceOf(Timestamp);
           expect(aNewData.createdAt).instanceOf(Timestamp);
+          expect(aNewData.originalDoc).instanceOf(DocumentSnapshot);
         });
 
         it("should error default config with 'customId'", async () => {
@@ -87,6 +89,7 @@ describe("Collections Functions", async () => {
           expect(aNewData.subCollection).toBeTypeOf("function");
           expect(aNewData.updatedAt).toBeUndefined();
           expect(aNewData.createdAt).toBeUndefined();
+          expect(aNewData.originalDoc).instanceOf(DocumentSnapshot);
         });
 
         it("should error config with 'customId'", async () => {
@@ -150,6 +153,7 @@ describe("Collections Functions", async () => {
           expect(aNewData.subCollection).toBeTypeOf("function");
           expect(aNewData.updatedAt).not.toBeUndefined();
           expect(aNewData.createdAt).not.toBeUndefined();
+          expect(aNewData.originalDoc).instanceOf(DocumentSnapshot);
         });
       });
     });
@@ -286,17 +290,19 @@ describe("Collections Functions", async () => {
       it("should create a data successfully", async () => {
         const aNewDataMock: SubColTestData = { phone: "+55" };
         const aNewData = await aParentData.subCollection("sub").create(aNewDataMock);
-        expect(Object.keys(aNewData)).toHaveLength(5);
+        expect(Object.keys(aNewData)).toHaveLength(6);
         expect(aNewData).toHaveProperty("id");
         expect(aNewData).toHaveProperty("data");
         expect(aNewData).toHaveProperty("subCollection");
         expect(aNewData).toHaveProperty("createdAt");
         expect(aNewData).toHaveProperty("updatedAt");
+        expect(aNewData).toHaveProperty("originalDoc");
         expect(aNewData.id.length > 0).toBe(true);
         expect(aNewData.data.phone).toStrictEqual(aNewDataMock.phone);
         expect(aNewData.subCollection).toBeTypeOf("function");
         expect(aNewData.updatedAt).instanceOf(Timestamp);
         expect(aNewData.createdAt).instanceOf(Timestamp);
+        expect(aNewData.originalDoc).instanceOf(DocumentSnapshot);
       });
     });
   });

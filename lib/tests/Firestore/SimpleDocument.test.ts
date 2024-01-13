@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FirebaseObject } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
-import { Timestamp, collection } from "firebase/firestore";
+import { DocumentSnapshot, Timestamp, collection } from "firebase/firestore";
 import { formatSimpleDocument } from "@src/Firestore/SimpleDocument.js";
 import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
 import {
@@ -15,13 +15,17 @@ describe("Simple Document", async () => {
 
   describe("formatSimpleDocument/4", () => {
     it("should return a complete document", () => {
+      const aDoc = {
+        data: () => TEST_DATA_MOCK,
+        id: TEST_ID_MOCK
+      };
       const aSimpleDocument = formatSimpleDocument<TestData>(
-        TEST_ID_MOCK,
-        TEST_DATA_MOCK,
+        // @ts-ignore
+        aDoc as DocumentSnapshot,
         TEST_DEFAULT_OPTIONS,
         aParentCollection
       );
-      expect(Object.keys(aSimpleDocument)).toHaveLength(5);
+      expect(Object.keys(aSimpleDocument)).toHaveLength(6);
       expect(aSimpleDocument.id).toBeTypeOf("string");
       expect(aSimpleDocument.data).toBeTypeOf("object");
       expect(aSimpleDocument.createdAt).toBeUndefined();
@@ -31,17 +35,21 @@ describe("Simple Document", async () => {
     });
 
     it("should return a data with timestamps", () => {
-      const aSimpleDocument = formatSimpleDocument<TestData>(
-        TEST_ID_MOCK,
-        {
+      const aDoc = {
+        data: () => ({
           ...TEST_DATA_MOCK,
           _createdAt: Timestamp.now(),
           _updatedAt: Timestamp.now()
-        },
+        }),
+        id: TEST_ID_MOCK
+      };
+      const aSimpleDocument = formatSimpleDocument<TestData>(
+        // @ts-ignore
+        aDoc as DocumentSnapshot,
         TEST_DEFAULT_OPTIONS,
         aParentCollection
       );
-      expect(Object.keys(aSimpleDocument)).toHaveLength(5);
+      expect(Object.keys(aSimpleDocument)).toHaveLength(6);
       expect(aSimpleDocument.id).toBeTypeOf("string");
       expect(aSimpleDocument.data).toBeTypeOf("object");
       expect(aSimpleDocument.createdAt).toBeInstanceOf(Timestamp);
