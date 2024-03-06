@@ -1,8 +1,8 @@
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
 import { formatALimit, formatOrderBy, formatQuery, formatWhere } from "@src/Firestore/Query.js";
 import { OrderBy, SimpleQuery, Where } from "@src/Firestore/QueryTypes.js";
-import { FirebaseObject } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
-import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
+import { FirebaseObject } from "@src/__HELPERS__/firestoreTestsHelpers.js";
+import { TestData } from "@src/__HELPERS__/typeHelpers.js";
 import { Timestamp, and, collection, limit, or, orderBy, query, where } from "firebase/firestore";
 import { describe, expect, it } from "vitest";
 

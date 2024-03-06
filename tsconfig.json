@@ -21,14 +21,10 @@
       "@src/*": [
         "./lib/src/*"
       ],
-      "@tests/*": [
-        "./lib/tests/*"
-      ],
     }
   },
   "include": [
     "./lib/src",
-    "./lib/tests"
   ],
   "exclude": [
     "node_modules",

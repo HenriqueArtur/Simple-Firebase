@@ -1,5 +1,5 @@
 import { BuildFirestore } from "@src/Firestore/index.js";
-import { FirebaseObject } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
+import { FirebaseObject } from "@src/__HELPERS__/firestoreTestsHelpers.js";
 import { describe, expect, it } from "vitest";
 
 describe("FIREBASE Firestore", async () => {

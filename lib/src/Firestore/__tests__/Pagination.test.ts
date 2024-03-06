@@ -1,9 +1,9 @@
 import { SimpleFirebaseFirestoreLastPageError } from "@src/Errors/SimpleFirebaseFirestoreLastPageError.js";
 import { BuildFunctions } from "@src/Firestore/CollectionFunctions.js";
-import { TEST_DEFAULT_OPTIONS } from "@tests/__HELPERS__/dataHelpers.js";
-import { FirebaseObject, cleanCollections } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
-import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
-import { TestDataMock } from "@tests/__MOCKS__/TestDataMock.js";
+import { TEST_DEFAULT_OPTIONS } from "@src/__HELPERS__/dataHelpers.js";
+import { FirebaseObject, cleanCollections } from "@src/__HELPERS__/firestoreTestsHelpers.js";
+import { TestData } from "@src/__HELPERS__/typeHelpers.js";
+import { TestDataMock } from "@src/__MOCKS__/TestDataMock.js";
 import { collection } from "firebase/firestore";
 import { afterAll, describe, expect, it } from "vitest";
 

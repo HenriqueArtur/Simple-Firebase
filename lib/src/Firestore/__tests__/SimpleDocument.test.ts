@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { FirebaseObject } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
+import { FirebaseObject } from "@src/__HELPERS__/firestoreTestsHelpers.js";
 import { DocumentSnapshot, Timestamp, collection } from "firebase/firestore";
 import { formatSimpleDocument } from "@src/Firestore/SimpleDocument.js";
-import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
+import { TestData } from "@src/__HELPERS__/typeHelpers.js";
 import {
   TEST_DATA_MOCK,
   TEST_DEFAULT_OPTIONS,
   TEST_ID_MOCK
-} from "@tests/__HELPERS__/dataHelpers.js";
+} from "@src/__HELPERS__/dataHelpers.js";
 
 describe("Simple Document", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();

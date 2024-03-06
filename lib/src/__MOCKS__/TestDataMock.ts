@@ -1,6 +1,6 @@
 import { Deep } from "@src/types.js";
 import { faker } from "@faker-js/faker";
-import { TestData } from "@tests/__HELPERS__/typeHelpers.js";
+import { TestData } from "@src/__HELPERS__/typeHelpers.js";
 import { Timestamp } from "firebase/firestore";
 
 export function TestDataMock(values?: Deep<TestData>): TestData {

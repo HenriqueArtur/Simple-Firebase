@@ -1,12 +1,12 @@
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
-import { FirebaseObject, cleanCollections } from "@tests/__HELPERS__/firestoreTestsHelpers.js";
+import { FirebaseObject, cleanCollections } from "@src/__HELPERS__/firestoreTestsHelpers.js";
 import { DocumentSnapshot, Timestamp, collection, doc, setDoc } from "firebase/firestore";
 import { afterAll, describe, expect, it } from "vitest";
 import { BuildFunctions } from "@src/Firestore/CollectionFunctions.js";
-import { SubColTestData, TestData } from "@tests/__HELPERS__/typeHelpers.js";
-import { TEST_DATA_MOCK, TEST_DEFAULT_OPTIONS } from "@tests/__HELPERS__/dataHelpers.js";
-import { registerTestData } from "@tests/__HELPERS__/registerData.js";
-import { TestDataMock } from "@tests/__MOCKS__/TestDataMock.js";
+import { SubColTestData, TestData } from "@src/__HELPERS__/typeHelpers.js";
+import { TEST_DATA_MOCK, TEST_DEFAULT_OPTIONS } from "@src/__HELPERS__/dataHelpers.js";
+import { registerTestData } from "@src/__HELPERS__/registerData.js";
+import { TestDataMock } from "@src/__MOCKS__/TestDataMock.js";
 
 describe("Collections Functions", async () => {
   const { FIRESTORE_WEB } = await FirebaseObject();
