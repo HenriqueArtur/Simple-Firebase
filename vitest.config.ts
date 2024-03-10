@@ -6,14 +6,12 @@ export default defineConfig({
   resolve: {
     preserveSymlinks: true,
     alias: {
-      "@src": path.resolve(__dirname, "./lib/src"),
-      "@tests": path.resolve(__dirname, "./lib/tests")
+      "@src": path.resolve(__dirname, "./lib"),
     }
   },
   test: {
     threads: true,
     globals: true,
-    include: ["./lib/tests/**"],
-    exclude: ["./lib/tests/__HELPERS__/**", "./lib/tests/__MOCKS__/**"]
+    include: ["./lib/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
   }
 });

@@ -19,12 +19,12 @@
     "noImplicitAny": true,
     "paths": {
       "@src/*": [
-        "./lib/src/*"
+        "./lib/*"
       ],
     }
   },
   "include": [
-    "./lib/src",
+    "./lib",
   ],
   "exclude": [
     "node_modules",
