@@ -20,11 +20,11 @@
     "paths": {
       "@src/*": [
         "./lib/*"
-      ],
+      ]
     }
   },
   "include": [
-    "./lib",
+    "./lib"
   ],
   "exclude": [
     "node_modules",
