@@ -12,7 +12,7 @@
     "build": "tsup",
     "lint": "eslint",
     "tsc": "tsc",
-    "test": "vitest --config ./vitest_new.config.ts"
+    "test": "vitest --config ./vitest.config.ts"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
