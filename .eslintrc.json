@@ -17,13 +17,169 @@
     "sourceType": "module"
   },
   "rules": {
+    "no-cond-assign": "error",
+    "no-await-in-loop": "error",
+    "function-call-argument-newline": [
+      "error",
+      "consistent"
+    ],
+    "no-constant-binary-expression": "error",
+    "no-constant-condition": "error",
+    "no-else-return": [
+      "error",
+      {
+        "allowElseIf": false
+      }
+    ],
+    "no-duplicate-case": "error",
+    "no-dupe-keys": "error",
+    "no-duplicate-imports": "error",
+    "no-fallthrough": "error",
+    "no-import-assign": "error",
+    "no-inner-declarations": [
+      "error",
+      "both"
+    ],
+    "no-inline-comments": "error",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
+    "no-irregular-whitespace": "error",
+    "no-loss-of-precision": "error",
+    "no-new-native-nonconstructor": "error",
+    "no-sparse-arrays": "error",
+    "func-call-spacing": [
+      "error",
+      "never"
+    ],
+    "semi": [
+      "error",
+      "never"
+    ],
+    "no-unmodified-loop-condition": "error",
+    "no-unsafe-finally": "error",
+    "no-unsafe-negation": "error",
+    "no-use-before-define": "error",
+    "require-atomic-updates": "error",
+    "use-isnan": "error",
+    "arrow-body-style": [
+      "error",
+      "as-needed"
+    ],
+    "block-scoped-var": "error",
+    "consistent-return": "error",
+    "curly": [
+      "error",
+      "multi",
+      "consistent"
+    ],
+    "max-depth": [
+      "error",
+      2
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 100,
+        "ignoreComments": false
+      }
+    ],
+    "max-lines-per-function": [
+      "error",
+      40
+    ],
+    "max-nested-callbacks": [
+      "error",
+      3
+    ],
+    "complexity": [
+      "error",
+      15
+    ],
+    "default-case-last": "error",
+    "default-param-last": [
+      "error"
+    ],
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
+    "func-style": [
+      "error",
+      "declaration",
+      {
+        "allowArrowFunctions": true
+      }
+    ],
+    "init-declarations": [
+      "error",
+      "always"
+    ],
+    "multiline-comment-style": [
+      "error",
+      "starred-block"
+    ],
+    "no-delete-var": "error",
+    "no-empty": "error",
+    "no-eq-null": "error",
+    "no-extend-native": "error",
+    "no-extra-boolean-cast": "error",
+    "no-global-assign": "error",
+    "no-implied-eval": "error",
+    "no-multi-assign": "error",
+    "no-magic-numbers": [
+      "error",
+      {
+        "ignoreArrayIndexes": true,
+        "ignoreClassFieldInitialValues": true
+      }
+    ],
+    "no-negated-condition": "error",
+    "no-nested-ternary": "error",
+    "no-param-reassign": "error",
+    "no-return-assign": [
+      "error",
+      "always"
+    ],
+    "no-throw-literal": "error",
+    "no-undef-init": "error",
+    "no-unneeded-ternary": "error",
+    "no-useless-catch": "error",
+    "no-useless-concat": "error",
+    "no-useless-constructor": "error",
+    "no-useless-escape": "error",
+    "no-useless-return": "error",
+    "no-var": "error",
+    "object-shorthand": "error",
+    "operator-assignment": [
+      "error",
+      "never"
+    ],
+    "prefer-arrow-callback": "error",
+    "prefer-const": "error",
+    "prefer-destructuring": "error",
+    "prefer-exponentiation-operator": "error",
+    "prefer-object-spread": "error",
+    "prefer-rest-params": "error",
+    "prefer-template": "error",
+    "sort-keys": [
+      "error",
+      "asc",
+      {
+        "caseSensitive": false
+      }
+    ],
+    "sort-vars": [
+      "error",
+      {
+        "ignoreCase": true
+      }
+    ],
+    "yoda": "error",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-misused-promises": "off",
-    "no-inline-comments": "error",
     "@typescript-eslint/strict-boolean-expressions": "warn",
     "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-explicit-any": "error",
     "id-length": [
       "error",
       {
@@ -56,9 +212,15 @@
         ]
       },
       {
-        "selector": "class",
+        "selector": "typeLike",
         "format": [
           "PascalCase"
+        ]
+      },
+      {
+        "selector": "parameter",
+        "format": [
+          "snake_case"
         ]
       }
     ]
