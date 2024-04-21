@@ -1,15 +1,16 @@
-import { Firestore } from "firebase/firestore";
-import { Collection, CollectionOptions, setOptions } from "./Collection.js";
-import { Deep } from "@src/types.js";
+import { type Deep } from "@src/types.js";
+import { type Firestore } from "firebase/firestore";
 
-export function BuildFirestore(aFirestoreRef: Firestore) {
+import { Collection, type CollectionOptions, setOptions } from "./Collection.js";
+
+export function BuildFirestore(a_firestore_ref: Firestore) {
   return {
-    collection: <T extends object, SC extends Record<string, object> = {}>(
-      aCollectionName: string,
-      anOptions?: Deep<CollectionOptions>
+    collection: <T extends object, SC extends Record<string, object>>(
+      a_collection_name: string,
+      an_options?: Deep<CollectionOptions>
     ) => {
-      const anOptionsFilled = setOptions(anOptions);
-      return Collection<T, SC>(aFirestoreRef, aCollectionName, anOptionsFilled);
+      const an_options_filled = setOptions(an_options)
+      return Collection<T, SC>(a_firestore_ref, a_collection_name, an_options_filled);
     }
   };
 }

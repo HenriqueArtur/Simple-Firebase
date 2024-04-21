@@ -1,46 +1,45 @@
+import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
+import { type Deep, type ID } from "@src/types.js";
 import {
-  CollectionReference,
-  DocumentData,
   addDoc,
+  type CollectionReference,
   deleteDoc,
   doc,
+  type DocumentData,
   getDoc,
   getDocs,
   serverTimestamp,
   setDoc,
   updateDoc
 } from "firebase/firestore";
-import { CollectionOptions } from "./Collection.js";
-import { FirestoreDate, QueryResult, QueryResultData } from "./FirestoreTypes.js";
-import { Deep, ID } from "@src/types.js";
-import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
-import { SimpleDocument, formatSimpleDocument } from "./SimpleDocument.js";
+
+import { type FirestoreDate, type QueryResult, type QueryResultData } from "./FirestoreTypes.js";
 import { flattenObject } from "./Helpers.js";
-import { SimpleQuery } from "./QueryTypes.js";
+import { defineACursor, NextPage } from "./Pagination.js";
 import { formatQuery } from "./Query.js";
-import { NextPage, defineACursor } from "./Pagination.js";
+import { type SimpleQuery } from "./QueryTypes.js";
+import { formatSimpleDocument, type SimpleDocument } from "./SimpleDocument.js";
 
 /* MAIN */
 export interface CollectionFunctions<T extends object, SC extends Record<string, object> = {}> {
-  create(aData: FirestoreDate<T>, customId?: ID): Promise<SimpleDocument<T, SC>>;
-  delete(anId: ID): Promise<void>;
-  find(aQuery: SimpleQuery<T>): Promise<QueryResult<T, SC>>;
-  findById(anId: ID): Promise<SimpleDocument<T, SC> | undefined>;
-  update(anId: ID, newData: Deep<FirestoreDate<T>>): Promise<SimpleDocument<T, SC>>;
+  create: (aData: FirestoreDate<T>, customId?: ID) => Promise<SimpleDocument<T, SC>>;
+  delete: (anId: ID) => Promise<void>;
+  find: (aQuery: SimpleQuery<T>) => Promise<QueryResult<T, SC>>;
+  findById: (anId: ID) => Promise<SimpleDocument<T, SC> | undefined>;
+  update: (anId: ID, newData: Deep<FirestoreDate<T>>) => Promise<SimpleDocument<T, SC>>;
 }
 
 export function BuildFunctions<T extends object, SC extends Record<string, object> = {}>(
   aCollection: CollectionReference,
-  anOptions: CollectionOptions
 ): CollectionFunctions<T, SC> {
   return {
     create: async (aData: FirestoreDate<T>, customId?: ID) =>
-      create<T, SC>(aCollection, anOptions, aData, customId),
-    delete: async (anId: ID) => hardDelete(aCollection, anId),
-    find: async (aQuery: SimpleQuery<T>) => find(aCollection, anOptions, aQuery),
-    findById: async (anId: ID) => findById<T, SC>(aCollection, anOptions, anId),
+      await create<T, SC>(aCollection, aData, customId),
+    delete: async (anId: ID) => { await hardDelete(aCollection, anId); },
+    find: async (aQuery: SimpleQuery<T>) => await find(aCollection, aQuery),
+    findById: async (anId: ID) => await findById<T, SC>(aCollection, anId),
     update: async (anId: ID, newData: Deep<FirestoreDate<T>>) =>
-      update<T, SC>(aCollection, anOptions, anId, newData)
+      await update<T, SC>(aCollection, anId, newData)
   };
 }
 
@@ -67,10 +66,10 @@ async function create<T extends object, SC extends Record<string, object> = {}>(
 
   const aDataToCreate = anOptions.addTimestamps
     ? {
-        ...aData,
-        _createdAt: serverTimestamp(),
-        _updatedAt: serverTimestamp()
-      }
+      ...aData,
+      _createdAt: serverTimestamp(),
+      _updatedAt: serverTimestamp()
+    }
     : aData;
 
   if (customId) {
@@ -113,8 +112,8 @@ async function find<T extends object, SC extends Record<string, object> = {}>(
   };
   return {
     ...aResult,
-    nextPage: () =>
-      NextPage(currentQuery, docsFoundUntilNow, page, limit, aCursor, aCollection, anOptions)
+    nextPage: async () =>
+      await NextPage(currentQuery, docsFoundUntilNow, page, limit, aCursor, aCollection, anOptions)
   };
 }
 
@@ -139,9 +138,9 @@ async function update<T extends object, SC extends Record<string, object> = {}>(
 ) {
   const aDataToUpdate = anOptions.addTimestamps
     ? {
-        ...aData,
-        _updatedAt: serverTimestamp()
-      }
+      ...aData,
+      _updatedAt: serverTimestamp()
+    }
     : aData;
   const aDocRef = doc(aCollection, anId);
   await updateDoc(aDocRef, flattenObject(aDataToUpdate));

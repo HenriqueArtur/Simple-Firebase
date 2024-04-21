@@ -1,5 +1,6 @@
-import { OrderByDirection, WhereFilterOp } from "firebase/firestore";
-import { AnOrderByDirection, AttributeOperators } from "./QueryTypes.js";
+import { type OrderByDirection, type WhereFilterOp } from "firebase/firestore";
+
+import { type AnOrderByDirection, type AttributeOperators } from "./QueryTypes.js";
 
 export function flattenObject(obj: Record<string, any>, parentKey = ""): Record<string, any> {
   let result: Record<string, any> = {};
