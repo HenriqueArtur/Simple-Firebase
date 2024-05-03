@@ -6,14 +6,14 @@ import { type SchemaShape } from "../Schema/index.js"
 
 export interface SimpleDocument<T extends SchemaShape> extends SimpleCollectionBase<T> {
   readonly id: ID
-  readonly data: SimpleCollection<T>["_type"]
+  readonly data: SimpleCollection<T>["_type"] | undefined
   readonly $REFERENCE: DocumentReference
 }
 
 export function FactorySimpleDocument<T extends SchemaShape>(
-  a_collection: SimpleCollection<T>,
+  a_collection: SimpleCollectionBase<T>,
   a_id: ID,
-  a_document_data: SimpleCollection<T>["_type"],
+  a_document_data: SimpleCollection<T>["_type"] | undefined,
   a_reference: DocumentReference
 ): SimpleDocument<T> {
   return {
