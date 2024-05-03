@@ -4,11 +4,14 @@ import { type z } from "zod"
 
 import { type SchemaShape, type SimpleSchema } from "../Schema/index.js"
 
-export interface SimpleCollection<T extends SchemaShape> {
-  readonly _type: z.infer<SimpleSchema<T>>
+export interface SimpleCollectionBase<T extends SchemaShape> {
   readonly $COLLECTION: CollectionReference
   readonly $PATH: Path
   readonly $SCHEMA: SimpleSchema<T>
+}
+
+export interface SimpleCollection<T extends SchemaShape> extends SimpleCollectionBase<T> {
+  readonly _type: z.infer<SimpleSchema<T>>
 }
 
 export function FactoryCollection<T extends SchemaShape>(
