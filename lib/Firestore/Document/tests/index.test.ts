@@ -3,6 +3,7 @@ import { CreateASchema, SCHEMA } from "@src/Firestore/Schema/index.js"
 import { type ID } from "@src/types.js"
 import { describe, expect, it } from "vitest"
 
+import { FactoryFirestoreDocumentReferenceMock } from "../firestore-document-reference-mock.js"
 import { FactorySimpleDocument } from "../index.js"
 
 describe('Document', () => {
@@ -12,11 +13,17 @@ describe('Document', () => {
         test: SCHEMA.string()
       })
       const a_mock_collection = await CollectionMock(a_schema)
+      const a_document_reference_mock = await FactoryFirestoreDocumentReferenceMock()
       const a_mock_id = 'mock_id' as ID
       const a_mock_data = {
         test: 'test',
       }
-      const result = FactorySimpleDocument(a_mock_collection, a_mock_id, a_mock_data)
+      const result = FactorySimpleDocument(
+        a_mock_collection,
+        a_mock_id,
+        a_mock_data,
+        a_document_reference_mock
+      )
       expect(result).toBeDefined()
       expect(typeof result).toBe('object')
       expect(result.$COLLECTION).toBeDefined()
