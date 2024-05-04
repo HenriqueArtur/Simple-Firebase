@@ -8,7 +8,10 @@ import { type SimpleCollection, type SimpleCollectionBase } from "./collection.j
 
 export interface CreateCustomOptions {
   custom_id?: ID
+  not_set_if_id_in_use?: boolean
 }
+
+type CreateCustomOptionsCustomId = Omit<CreateCustomOptions, "custom_id"> & { custom_id: ID }
 
 export async function Create<T extends SchemaShape>(
   a_simple_collection: SimpleCollectionBase<T>,
@@ -43,7 +46,7 @@ export async function createInFirebase<T>(
       createInFirebaseCustomId<T>(
         a_collection,
         a_new_data,
-        a_custom_options.custom_id)
+        a_custom_options as CreateCustomOptionsCustomId)
   return await
     createInFirebaseAutoId<T>(a_collection, a_new_data)
 }
@@ -64,9 +67,13 @@ export async function createInFirebaseAutoId<T>(
 export async function createInFirebaseCustomId<T>(
   a_collection: CollectionReference,
   a_new_data: object,
-  custom_id: ID
-) {
-  const a_doc_ref = doc(a_collection, custom_id)
+  a_crate_options: CreateCustomOptionsCustomId) {
+  const a_doc_ref = doc(a_collection, a_crate_options.custom_id)
+  if (a_crate_options.not_set_if_id_in_use === true) {
+    const a_pre_doc_snap = await getDoc(a_doc_ref)
+    if (a_pre_doc_snap.exists())
+      throw new Error(`Document "${a_crate_options.custom_id}" already exists.`)
+  }
   await setDoc(a_doc_ref, a_new_data)
   const a_doc_snap = await getDoc(a_doc_ref)
   return {
