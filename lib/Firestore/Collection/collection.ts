@@ -2,7 +2,9 @@ import { type Path } from "@src/types.js"
 import { collection, type CollectionReference, type Firestore } from "firebase/firestore"
 import { type z } from "zod"
 
+import { type SimpleDocument } from "../Document/index.js"
 import { type SchemaShape, type SimpleSchema } from "../Schema/index.js"
+import { Create, type CreateCustomOptions } from "./create.js"
 
 export interface SimpleCollectionBase<T extends SchemaShape> {
   readonly $COLLECTION: CollectionReference
@@ -12,6 +14,10 @@ export interface SimpleCollectionBase<T extends SchemaShape> {
 
 export interface SimpleCollection<T extends SchemaShape> extends SimpleCollectionBase<T> {
   readonly _type: z.infer<SimpleSchema<T>>
+  readonly create: (
+    a_new_data: SimpleCollection<T>["_type"],
+    a_custom_options?: CreateCustomOptions
+  ) => Promise<SimpleDocument<T>>
 }
 
 export function FactoryCollection<T extends SchemaShape>(
@@ -41,4 +47,23 @@ class ConcreteSimpleCollection<T extends SchemaShape> {
     this.$PATH = a_path
     this.$SCHEMA = a_schema
   }
+
+  async create(
+    a_new_data: SimpleCollection<T>["_type"],
+    a_custom_options?: CreateCustomOptions
+  ) {
+    return await Create(
+      this.$SIMPLE_COLLECTION(),
+      a_new_data,
+      a_custom_options)
+  }
+
+  private $SIMPLE_COLLECTION() {
+    return {
+      $COLLECTION: this.$COLLECTION,
+      $PATH: this.$PATH,
+      $SCHEMA: this.$SCHEMA,
+    }
+  }
 }
+
