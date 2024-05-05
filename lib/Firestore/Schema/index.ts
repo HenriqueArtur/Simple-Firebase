@@ -6,7 +6,6 @@ export type SchemaType = z.ZodSchema
 export type SimpleSchema<T extends SchemaShape> = z.ZodObject<T>
 
 export const SCHEMA = {
-  array: <T extends z.ZodTypeAny>(a_type: T) => z.array(a_type),
   boolean: () => z.boolean(),
   date: () => z.date(),
   map: <T extends SchemaShape>(a_map_schema: T) => z.object(a_map_schema),
