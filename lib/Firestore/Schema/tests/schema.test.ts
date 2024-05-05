@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
-import { CreateASchema, SCHEMA, type SchemaShape, validateSchema } from "../index.js"
+import { CreateASchema, SCHEMA, type SchemaShape, validateSchema } from "../schema.js"
 
 // eslint-disable-next-line max-lines-per-function
 describe("Schema", () => {

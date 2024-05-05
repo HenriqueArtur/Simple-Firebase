@@ -3,7 +3,7 @@ import { doc, setDoc } from "firebase/firestore"
 import { addDoc, type CollectionReference, getDoc } from "firebase/firestore/lite"
 
 import { FactorySimpleDocument } from "../../Document/index.js"
-import { type SchemaShape } from "../../Schema/index.js"
+import { type SchemaShape } from "../../Schema/schema.js"
 import { type SimpleCollection, type SimpleCollectionBase } from "../collection.js"
 
 export interface CreateCustomOptions {

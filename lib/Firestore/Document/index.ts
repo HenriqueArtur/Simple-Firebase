@@ -2,7 +2,7 @@ import { type ID } from "@src/types.js"
 import { type DocumentReference } from "firebase/firestore"
 
 import { type SimpleCollection, type SimpleCollectionBase } from "../Collection/collection.js"
-import { type SchemaShape } from "../Schema/index.js"
+import { type SchemaShape } from "../Schema/schema.js"
 
 export interface SimpleDocument<T extends SchemaShape> extends SimpleCollectionBase<T> {
   readonly id: ID

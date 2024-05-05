@@ -3,7 +3,7 @@ import { collection, type CollectionReference, type Firestore } from "firebase/f
 import { type z } from "zod"
 
 import { type SimpleDocument } from "../Document/index.js"
-import { type SchemaShape, type SimpleSchema } from "../Schema/index.js"
+import { type SchemaShape, type SimpleSchema } from "../Schema/schema.js"
 import { Create, type CreateCustomOptions } from "./Operations/create.js"
 import { findById } from "./Operations/find-by-id.js"
 import { hardDelete } from "./Operations/hard-delete.js"

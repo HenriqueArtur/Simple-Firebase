@@ -1,6 +1,6 @@
 import { FirebaseObject } from "@src/__HELPERS__/firestoreTestsHelpers.js"
 
-import { CreateASchema, SCHEMA, type SchemaShape, type SimpleSchema } from "../Schema/index.js"
+import { CreateASchema, SCHEMA, type SchemaShape, type SimpleSchema } from "../Schema/schema.js"
 import { FactoryCollection } from "./collection.js"
 
 export async function CollectionMock<T extends SchemaShape>(
