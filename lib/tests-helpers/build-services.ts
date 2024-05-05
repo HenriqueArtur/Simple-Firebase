@@ -2,7 +2,7 @@ import { BuildFirebase } from "@src/Services.js"
 import dotenv from "dotenv"
 dotenv.config()
 
-export async function FirebaseObject() {
+export async function BuildServicesTest() {
   return await BuildFirebase(
     {
       apiKey: process.env.API_KEY!,

@@ -1,4 +1,4 @@
-import { FirebaseObject } from "@src/__HELPERS__/firestoreTestsHelpers.js"
+import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
 import { collection } from "firebase/firestore"
 
 import { CreateASchema, SCHEMA, type SchemaShape, type SimpleSchema } from "../Schema/schema.js"
@@ -8,7 +8,7 @@ import { FactoryCollection, type SimpleCollectionBase } from "./collection.js"
 export async function CollectionMock<T extends SchemaShape>(
   a_schema?: SimpleSchema<T>
 ) {
-  const { FIRESTORE_WEB } = await FirebaseObject()
+  const { FIRESTORE_WEB } = await BuildServicesTest()
   const the_firestore = FIRESTORE_WEB
   const the_path = 'test'
   const the_schema = a_schema ?? CreateASchema({
@@ -19,7 +19,7 @@ export async function CollectionMock<T extends SchemaShape>(
 
 export async function CollectionBaseDefaultMock():
   Promise<SimpleCollectionBase<DefaultSchemaMock>> {
-  const { FIRESTORE_WEB } = await FirebaseObject()
+  const { FIRESTORE_WEB } = await BuildServicesTest()
   const the_path = 'test'
   const the_schema = DEFAULT_SCHEMA_MOCK()
   return {

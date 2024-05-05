@@ -1,8 +1,8 @@
-import { FirebaseObject } from "@src/__HELPERS__/firestoreTestsHelpers.js"
+import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
 import { type CollectionReference, type DocumentReference } from "firebase/firestore"
 
 export async function FactoryFirestoreDocumentReferenceMock(): Promise<DocumentReference> {
-  const { FIRESTORE_WEB } = await FirebaseObject()
+  const { FIRESTORE_WEB } = await BuildServicesTest()
   const a_collection: CollectionReference = {
     converter: null,
     firestore: FIRESTORE_WEB,
