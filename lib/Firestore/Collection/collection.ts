@@ -1,10 +1,12 @@
-import { type Path } from "@src/types.js"
+import { type ID, type Path } from "@src/types.js"
 import { collection, type CollectionReference, type Firestore } from "firebase/firestore"
 import { type z } from "zod"
 
 import { type SimpleDocument } from "../Document/index.js"
 import { type SchemaShape, type SimpleSchema } from "../Schema/index.js"
-import { Create, type CreateCustomOptions } from "./create.js"
+import { Create, type CreateCustomOptions } from "./Operations/create.js"
+import { findById } from "./Operations/find-by-id.js"
+import { hardDelete } from "./Operations/hard-delete.js"
 
 export interface SimpleCollectionBase<T extends SchemaShape> {
   readonly $COLLECTION: CollectionReference
@@ -18,6 +20,8 @@ export interface SimpleCollection<T extends SchemaShape> extends SimpleCollectio
     a_new_data: SimpleCollection<T>["_type"],
     a_custom_options?: CreateCustomOptions
   ) => Promise<SimpleDocument<T>>
+  readonly findById: (an_id: ID) => Promise<SimpleDocument<T>>
+  readonly hardDelete: (an_id: ID) => Promise<void>
 }
 
 export function FactoryCollection<T extends SchemaShape>(
@@ -55,7 +59,16 @@ class ConcreteSimpleCollection<T extends SchemaShape> {
     return await Create(
       this.$SIMPLE_COLLECTION(),
       a_new_data,
-      a_custom_options)
+      a_custom_options
+    )
+  }
+
+  async findById(an_id: ID) {
+    return await findById(this.$SIMPLE_COLLECTION(), an_id)
+  }
+
+  async hardDelete(an_id: ID) {
+    await hardDelete(this.$SIMPLE_COLLECTION(), an_id)
   }
 
   private $SIMPLE_COLLECTION() {
