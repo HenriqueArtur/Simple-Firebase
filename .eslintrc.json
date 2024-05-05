@@ -161,13 +161,6 @@
     "prefer-object-spread": "error",
     "prefer-rest-params": "error",
     "prefer-template": "error",
-    "sort-keys": [
-      "error",
-      "asc",
-      {
-        "caseSensitive": false
-      }
-    ],
     "sort-vars": [
       "error",
       {
