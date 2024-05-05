@@ -2,9 +2,9 @@ import { type ID } from "@src/types.js"
 import { doc, setDoc } from "firebase/firestore"
 import { addDoc, type CollectionReference, getDoc } from "firebase/firestore/lite"
 
-import { FactorySimpleDocument } from "../Document/index.js"
-import { type SchemaShape } from "../Schema/index.js"
-import { type SimpleCollection, type SimpleCollectionBase } from "./collection.js"
+import { FactorySimpleDocument } from "../../Document/index.js"
+import { type SchemaShape } from "../../Schema/index.js"
+import { type SimpleCollection, type SimpleCollectionBase } from "../collection.js"
 
 export interface CreateCustomOptions {
   custom_id?: ID
@@ -64,6 +64,7 @@ export async function createInFirebaseAutoId<T>(
   }
 }
 
+// TODO: Use transaction here in the future
 export async function createInFirebaseCustomId<T>(
   a_collection: CollectionReference,
   a_new_data: object,
