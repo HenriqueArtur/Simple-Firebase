@@ -1,7 +1,7 @@
-import { FirebaseApp, getApp, initializeApp } from "firebase/app";
-import { Auth, connectAuthEmulator, getAuth } from "firebase/auth";
-import { Firestore, connectFirestoreEmulator, getFirestore } from "firebase/firestore";
-import { Functions, connectFunctionsEmulator, getFunctions } from "firebase/functions";
+import { type FirebaseApp, getApp, initializeApp } from "firebase/app"
+import { type Auth, connectAuthEmulator, getAuth } from "firebase/auth"
+import { connectFirestoreEmulator, type Firestore, getFirestore } from "firebase/firestore"
+import { connectFunctionsEmulator, type Functions, getFunctions } from "firebase/functions"
 
 export interface FirebaseConfig {
   apiKey: string;
@@ -36,53 +36,75 @@ interface EnvOptionsFilled {
   };
 }
 
+const DEFAULT_PORT = {
+  AUTH: 9099,
+  FUNCTIONS: 5001,
+  FIRESTORE: 8080
+}
+
 export async function BuildFirebase(
-  firebaseConfig: FirebaseConfig,
-  anAppName: string,
+  firebase_config: FirebaseConfig,
+  an_app_name: string,
   opts: EnvOptions
 ): Promise<FirebaseEntity> {
-  const optFilled: EnvOptionsFilled = {
+  const opt_filled: EnvOptionsFilled = {
     env: opts.env,
     port: {
-      auth: opts.port && opts.port.auth ? opts.port.auth : 9099,
-      functions: opts.port && opts.port.functions ? opts.port.functions : 5001,
-      firestore: opts.port && opts.port.firestore ? opts.port.firestore : 8080
+      auth: Boolean(opts.port) && Boolean(opts.port!.auth)
+        ? opts.port!.auth!
+        : DEFAULT_PORT.AUTH,
+      functions: Boolean(opts.port) && Boolean(opts.port!.functions)
+        ? opts.port!.functions!
+        : DEFAULT_PORT.FIRESTORE,
+      firestore: Boolean(opts.port) && Boolean(opts.port!.firestore)
+        ? opts.port!.firestore!
+        : DEFAULT_PORT.FIRESTORE
     }
-  };
-  const anApp = appExists(anAppName);
-  return anApp
-    ? getServicesRef(anApp)
-    : await buildServices(initializeApp(firebaseConfig, anAppName), optFilled);
+  }
+  const { exists, an_app } = appExists(an_app_name)
+  return exists
+    ? getServicesRef(an_app)
+    : await buildServices(initializeApp(firebase_config, an_app_name), opt_filled)
 }
 
-function appExists(name: string): FirebaseApp | undefined {
+interface AppExistsTrue {
+  exists: true
+  an_app: FirebaseApp
+}
+interface AppExistsFalse {
+  exists: false
+  an_app: undefined
+}
+type AppExists = AppExistsTrue | AppExistsFalse
+function appExists(name: string): AppExists {
   try {
-    return getApp(name);
+    const an_app = getApp(name)
+    return { exists: true, an_app }
   } catch (error) {
-    return;
+    return { exists: false, an_app: undefined }
   }
 }
 
-async function buildServices(firebaseRef: FirebaseApp, opts: EnvOptionsFilled) {
-  const AUTH_WEB = getAuth(firebaseRef);
-  const CLOUD_FUNCTIONS_WEB = getFunctions(firebaseRef);
-  const FIRESTORE_WEB = getFirestore(firebaseRef);
-  if (opts.env == "test") {
-    const authUrl = `http://localhost:${opts.port.auth}`;
-    await fetch(authUrl);
-    connectAuthEmulator(AUTH_WEB, authUrl, {
+async function buildServices(firebase_ref: FirebaseApp, opts: EnvOptionsFilled) {
+  const AUTH_WEB = getAuth(firebase_ref)
+  const CLOUD_FUNCTIONS_WEB = getFunctions(firebase_ref)
+  const FIRESTORE_WEB = getFirestore(firebase_ref)
+  if (opts.env === "test") {
+    const auth_url = `http://localhost:${opts.port.auth}`
+    await fetch(auth_url)
+    connectAuthEmulator(AUTH_WEB, auth_url, {
       disableWarnings: true
-    });
-    connectFunctionsEmulator(CLOUD_FUNCTIONS_WEB, "localhost", opts.port.functions);
-    connectFirestoreEmulator(FIRESTORE_WEB, "localhost", opts.port.firestore);
+    })
+    connectFunctionsEmulator(CLOUD_FUNCTIONS_WEB, "localhost", opts.port.functions)
+    connectFirestoreEmulator(FIRESTORE_WEB, "localhost", opts.port.firestore)
   }
-  return { AUTH_WEB, CLOUD_FUNCTIONS_WEB, FIRESTORE_WEB };
+  return { AUTH_WEB, CLOUD_FUNCTIONS_WEB, FIRESTORE_WEB }
 }
 
-function getServicesRef(firebaseRef: FirebaseApp) {
+function getServicesRef(firebase_ref: FirebaseApp) {
   return {
-    AUTH_WEB: getAuth(firebaseRef),
-    CLOUD_FUNCTIONS_WEB: getFunctions(firebaseRef),
-    FIRESTORE_WEB: getFirestore(firebaseRef)
-  };
+    AUTH_WEB: getAuth(firebase_ref),
+    CLOUD_FUNCTIONS_WEB: getFunctions(firebase_ref),
+    FIRESTORE_WEB: getFirestore(firebase_ref)
+  }
 }
