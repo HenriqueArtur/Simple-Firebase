@@ -1,9 +1,10 @@
+import { FactorySimpleDocument } from "@src/Firestore/Document/index.js"
+import { type SchemaShape } from "@src/Firestore/Schema/schema.js"
 import { type ID } from "@src/types.js"
 import { type CollectionReference, doc, getDoc } from "firebase/firestore"
 
-import { FactorySimpleDocument } from "../Document/index.js"
-import { type SchemaShape } from "../Schema/index.js"
-import { type SimpleCollection, type SimpleCollectionBase } from "./collection.js"
+import { type SimpleCollection, type SimpleCollectionBase } from "../collection.js"
+
 
 export async function findById<T extends SchemaShape>(
   a_simple_collection: SimpleCollectionBase<T>,

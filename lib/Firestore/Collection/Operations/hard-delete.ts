@@ -1,8 +1,9 @@
+import { type SchemaShape } from "@src/Firestore/Schema/schema.js"
 import { type ID } from "@src/types.js"
 import { deleteDoc, doc } from "firebase/firestore"
 
-import { type SchemaShape } from "../Schema/index.js"
-import { type SimpleCollectionBase } from "./collection.js"
+import { type SimpleCollectionBase } from "../collection.js"
+
 
 export async function hardDelete<T extends SchemaShape>(
   a_simple_collection: SimpleCollectionBase<T>,
