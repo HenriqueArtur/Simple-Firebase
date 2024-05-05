@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 
-import { CreateASchema, SCHEMA, type SchemaType, validateSchema } from "../index.js"
+import { CreateASchema, SCHEMA, type SchemaShape, validateSchema } from "../index.js"
 
+// eslint-disable-next-line max-lines-per-function
 describe("Schema", () => {
   describe("SCHEMA Object", () => {
     it("should instantiate SCHEMA Object", () => {
-      const SCHEMA_TYPE_QNT = 7
+      const SCHEMA_TYPE_QNT = 6
       expect(Object.keys(SCHEMA)).toHaveLength(SCHEMA_TYPE_QNT)
-      expect(SCHEMA).toHaveProperty("array")
       expect(SCHEMA).toHaveProperty("boolean")
       expect(SCHEMA).toHaveProperty("date")
       expect(SCHEMA).toHaveProperty("map")
@@ -20,8 +20,8 @@ describe("Schema", () => {
 
   describe("CreateASchema/1", () => {
     it("should create a schema", () => {
-      const input: SchemaType = {
-        array: SCHEMA.array(SCHEMA.string()),
+      const input: SchemaShape = {
+        array: SCHEMA.string().array(),
         boolean: SCHEMA.boolean(),
         date: SCHEMA.date(),
         null: SCHEMA.null(),
@@ -53,6 +53,7 @@ describe("Schema", () => {
       const input = {
         string: 10
       }
+      // eslint-disable-next-line max-nested-callbacks
       expect(() => validateSchema(a_schema, input)).toThrow()
     })
   })
