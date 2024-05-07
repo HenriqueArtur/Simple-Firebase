@@ -1,19 +1,24 @@
-import { type OrderByDirection, type WhereFilterOp } from "firebase/firestore";
+import { type OrderByDirection, type WhereFilterOp } from "firebase/firestore"
 
-import { type AnOrderByDirection, type AttributeOperators } from "./QueryTypes.js";
+import { type AnOrderByDirection, type AttributeOperators } from "./Query/QueryTypes.js"
 
-export function flattenObject(obj: Record<string, any>, parentKey = ""): Record<string, any> {
-  let result: Record<string, any> = {};
+const IS_EMPTY = 0
+
+export function flattenObject(
+  obj: Record<string, unknown>,
+  parent_key = ""
+): Record<string, unknown> {
+  let result: Record<string, unknown> = {}
   for (const key in obj) {
-    const newKey = parentKey ? `${parentKey}.${key}` : key;
+    const new_key = (parent_key.length > IS_EMPTY) ? `${parent_key}.${key}` : key
     if (typeof obj[key] === "object" && obj[key] !== null) {
-      const nestedObject = flattenObject(obj[key], newKey);
-      result = { ...result, ...nestedObject };
-      continue;
+      const nested_object = flattenObject(obj[key] as Record<string, unknown>, new_key)
+      result = { ...result, ...nested_object }
+      continue
     }
-    result[newKey] = obj[key];
+    result[new_key] = obj[key]
   }
-  return result;
+  return result
 }
 
 export function isOperator(key: string) {
@@ -28,37 +33,40 @@ export function isOperator(key: string) {
     "$IN",
     "$NOT_IN",
     "$NOT"
-  ].includes(key);
+  ].includes(key)
 }
 
 export function aOperator(key: AttributeOperators): WhereFilterOp {
   switch (key) {
     case "$LESS":
-      return "<";
+      return "<"
     case "$LESS_OR_EQ":
-      return "<=";
+      return "<="
     case "$EQ":
-      return "==";
+      return "=="
     case "$GREATER":
-      return ">";
+      return ">"
     case "$GREATER_OR_EQ":
-      return ">=";
+      return ">="
     case "$ARRAY_CONTAINS":
-      return "array-contains";
+      return "array-contains"
     case "$ARRAY_CONTAINS_ANY":
-      return "array-contains-any";
+      return "array-contains-any"
     case "$IN":
-      return "in";
+      return "in"
     case "$NOT_IN":
-      return "not-in";
+      return "not-in"
     case "$NOT":
-      return "!=";
+      return "!="
+    default:
+      throw new Error("Operation not exist")
   }
 }
 
-export const formatAKey = (currentKey: string, lastKey: string) =>
-  lastKey == "" ? currentKey : `${lastKey}.${currentKey}`;
+export function formatAKey(current_key: string, last_key: string) {
+  return last_key === "" ? current_key : `${last_key}.${current_key}`
+}
 
 export function formatDirection(value: AnOrderByDirection) {
-  return value.toLowerCase() as OrderByDirection;
+  return value.toLowerCase() as OrderByDirection
 }
