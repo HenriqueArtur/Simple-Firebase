@@ -21,3 +21,7 @@ export function CreateASchema<T extends SchemaShape>(a_schema: T): SimpleSchema<
 export function validateSchema<T extends SchemaType>(a_schema: T, a_data: unknown) {
   return a_schema.parse(a_data) as z.infer<T>
 }
+
+export function getASchemaPartial<T extends SchemaShape>(a_schema: SimpleSchema<T>) {
+  return a_schema.deepPartial()
+}
