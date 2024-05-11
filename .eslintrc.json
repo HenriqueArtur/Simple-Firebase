@@ -58,7 +58,7 @@
     "no-unmodified-loop-condition": "error",
     "no-unsafe-finally": "error",
     "no-unsafe-negation": "error",
-    "no-use-before-define": "error",
+    "no-use-before-define": "off",
     "require-atomic-updates": "error",
     "use-isnan": "error",
     "arrow-body-style": [
@@ -75,13 +75,6 @@
     "max-depth": [
       "error",
       2
-    ],
-    "max-len": [
-      "error",
-      {
-        "code": 100,
-        "ignoreComments": false
-      }
     ],
     "max-lines-per-function": [
       "error",
@@ -217,5 +210,15 @@
         ]
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.test.ts"
+      ],
+      "rules": {
+        "no-magic-numbers": "off"
+      }
+    }
+  ]
 }
