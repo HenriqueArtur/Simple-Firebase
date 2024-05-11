@@ -1,40 +1,25 @@
 import {
   ArrayIsEmpty,
   Exist,
-  includesSome,
+  IncludesSome,
   IsEmpty,
   IsNotEmpty,
+  NotExist,
   ObjectIsEmpty,
   SizeMoreThanOne,
   StringIsEmpty
 } from "@src/language-functions.js"
 import { describe, expect, it } from "vitest"
 
-describe("includesSome", () => {
+describe("IncludesSome", () => {
   it("should return true if any value in values_to_check is present in an_array", () => {
-    expect(includesSome([1, 2, 3], [2])).toBe(true)
-    expect(includesSome(["a", "b", "c"], ["c", "d"])).toBe(true)
+    expect(IncludesSome([1, 2, 3], [2])).toBe(true)
+    expect(IncludesSome(["a", "b", "c"], ["c", "d"])).toBe(true)
   })
 
   it("should return false if none of the values in values_to_check is present in an_array", () => {
-    expect(includesSome([1, 2, 3], [4])).toBe(false)
-    expect(includesSome(["a", "b", "c"], ["d", "e"])).toBe(false)
-  })
-})
-
-describe("IsNotEmpty", () => {
-  it("should return true if the structure is not empty", () => {
-    expect(IsNotEmpty([1, 2, 3])).toBe(true)
-    expect(IsNotEmpty("abc")).toBe(true)
-    expect(IsNotEmpty({ key: "value" })).toBe(true)
-  })
-
-  it("should return false if the structure is empty", () => {
-    expect(IsNotEmpty([])).toBe(false)
-    expect(IsNotEmpty("")).toBe(false)
-    expect(IsNotEmpty({})).toBe(false)
-    expect(IsNotEmpty(null)).toBe(false)
-    expect(IsNotEmpty(undefined)).toBe(false)
+    expect(IncludesSome([1, 2, 3], [4])).toBe(false)
+    expect(IncludesSome(["a", "b", "c"], ["d", "e"])).toBe(false)
   })
 })
 
@@ -51,6 +36,22 @@ describe("IsEmpty", () => {
     expect(IsEmpty([1, 2, 3])).toBe(false)
     expect(IsEmpty({ key: "value" })).toBe(false)
     expect(IsEmpty("non-empty string")).toBe(false)
+  })
+})
+
+describe("IsNotEmpty", () => {
+  it("should return true if the structure is not empty", () => {
+    expect(IsNotEmpty([1, 2, 3])).toBe(true)
+    expect(IsNotEmpty("abc")).toBe(true)
+    expect(IsNotEmpty({ key: "value" })).toBe(true)
+  })
+
+  it("should return false if the structure is empty", () => {
+    expect(IsNotEmpty([])).toBe(false)
+    expect(IsNotEmpty("")).toBe(false)
+    expect(IsNotEmpty({})).toBe(false)
+    expect(IsNotEmpty(null)).toBe(false)
+    expect(IsNotEmpty(undefined)).toBe(false)
   })
 })
 
@@ -85,15 +86,28 @@ describe("ArrayIsEmpty", () => {
 })
 
 describe("Exist", () => {
+  it("should return false for null or undefined", () => {
+    expect(Exist(null)).toBe(false)
+    expect(Exist(undefined)).toBe(false)
+  })
+
+  it("should return true for non-null and defined values", () => {
+    expect(Exist("")).toBe(true)
+    expect(Exist([])).toBe(true)
+    expect(Exist({})).toBe(true)
+  })
+})
+
+describe("NotExist", () => {
   it("should return true for null or undefined", () => {
-    expect(Exist(null)).toBe(true)
-    expect(Exist(undefined)).toBe(true)
+    expect(NotExist(null)).toBe(true)
+    expect(NotExist(undefined)).toBe(true)
   })
 
   it("should return false for non-null and defined values", () => {
-    expect(Exist("")).toBe(false)
-    expect(Exist([])).toBe(false)
-    expect(Exist({})).toBe(false)
+    expect(NotExist("")).toBe(false)
+    expect(NotExist([])).toBe(false)
+    expect(NotExist({})).toBe(false)
   })
 })
 
