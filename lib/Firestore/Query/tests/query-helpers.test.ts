@@ -1,7 +1,6 @@
-/* eslint-disable max-lines-per-function */
 import { describe, expect, it } from "vitest"
 
-import { aOperator, isOperator } from "../operators.js"
+import { aOperator, isOperator } from "../query-helpers.js"
 
 describe("isOperator/1", () => {
   it("should return true if $LESS", () => {

@@ -20,7 +20,7 @@ import {
 } from "firebase/firestore"
 
 import { formatAKey, formatDirection } from "../Helpers.js"
-import { aOperator, isOperator } from "./operators.js"
+import { aOperator, isOperator } from "./query-helpers.js"
 import { type AnOrderByDirection, type AttributeOperators, type SimpleQuery } from "./QueryTypes.js"
 
 export function formatQuery<T extends object>(
