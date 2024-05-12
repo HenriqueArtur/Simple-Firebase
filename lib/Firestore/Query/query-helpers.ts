@@ -1,6 +1,6 @@
 import { type WhereFilterOp } from "firebase/firestore"
 
-import { type AttributeOperators } from "./QueryTypes.js"
+import { type AttributeOperators } from "./query-types.js"
 
 export function isOperator(key: string) {
   return [

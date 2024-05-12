@@ -21,7 +21,7 @@ import {
 
 import { formatAKey, formatDirection } from "../Helpers.js"
 import { aOperator, isOperator } from "./query-helpers.js"
-import { type AnOrderByDirection, type AttributeOperators, type SimpleQuery } from "./QueryTypes.js"
+import { type AnOrderByDirection, type AttributeOperators, type SimpleQuery } from "./query-types.js"
 
 export function formatQuery<T extends object>(
   a_collection: CollectionReference,

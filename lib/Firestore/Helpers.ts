@@ -1,6 +1,6 @@
 import { type OrderByDirection } from "firebase/firestore"
 
-import { type AnOrderByDirection } from "./Query/QueryTypes.js"
+import { type AnOrderByDirection } from "./Query/query-types.js"
 
 const IS_EMPTY = 0
 

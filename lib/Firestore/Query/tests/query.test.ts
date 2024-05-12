@@ -4,7 +4,7 @@ import { and, collection, limit, or, orderBy, query, Timestamp, where } from "fi
 import { describe, expect, it } from "vitest"
 
 import { formatALimit, formatOrderBy, formatQuery, formatWhere } from "../query.js"
-import { type OrderBy, type SimpleQuery, type Where } from "../QueryTypes.js"
+import { type OrderBy, type SimpleQuery, type Where } from "../query-types.js"
 
 describe("Query", async () => {
   const { FIRESTORE_WEB } = await BuildServicesTest()
