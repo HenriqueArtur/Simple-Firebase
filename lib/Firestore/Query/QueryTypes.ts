@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { type Timestamp } from "firebase/firestore"
 
 export type LogicalOperators = "$AND" | "$OR";
 
@@ -23,11 +23,11 @@ export type AttributeOperators =
 
 export type QueryOperators = LogicalOperators | AttributeOperators;
 
-export type SimpleQuery<T extends object> = {
+export interface SimpleQuery<T extends object> {
   where: Where<T>;
   orderBy?: OrderBy<T>;
   limit?: number;
-};
+}
 
 // Find one way to make a DISJUNCTION here
 export type Where<T extends object> =
@@ -45,32 +45,32 @@ export type CompoundWithoutLogicOperators<T> = {
 
 export type CompoundQuery<T> = {
   [K in keyof T]?: K extends LogicalOperators
-    ? CompoundQuery<T>
-    : T[K] extends (infer U)[]
-    ? U extends object | (infer _A)[]
-      ? never
-      : CompoundArray<U>
-    : AttributesQuery<T[K]>;
+  ? CompoundQuery<T>
+  : T[K] extends Array<infer U>
+  ? U extends object | unknown[]
+  ? never
+  : CompoundArray<U>
+  : AttributesQuery<T[K]>;
 };
 
 export type CompoundArray<T> =
   | {
-      [K in AttributeOperatorsArray]?: K extends "$ARRAY_CONTAINS" ? T : T[];
-    }
+    [K in AttributeOperatorsArray]?: K extends "$ARRAY_CONTAINS" ? T : T[];
+  }
   | T[];
 
 export type AttributesQuery<T> = IsOperators<T> | IsNested<T> | T;
 
 export type IsOperators<T> = {
   [K in AttributeOperators]?: K extends "$EQ"
-    ? T
-    : K extends AttributeOperatorsNumber
-    ? T extends number
-      ? number
-      : Timestamp
-    : K extends AttributeOperatorsNot
-    ? T
-    : T[];
+  ? T
+  : K extends AttributeOperatorsNumber
+  ? T extends number
+  ? number
+  : Timestamp
+  : K extends AttributeOperatorsNot
+  ? T
+  : T[];
 };
 
 export type IsNested<T> = {
