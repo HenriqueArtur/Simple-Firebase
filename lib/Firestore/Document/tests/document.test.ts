@@ -3,8 +3,8 @@ import { CreateASchema, SCHEMA } from "@src/Firestore/Schema/schema.js"
 import { type ID } from "@src/types.js"
 import { describe, expect, it } from "vitest"
 
+import { FactorySimpleDocument } from "../document.js"
 import { FactoryFirestoreDocumentReferenceMock } from "../firestore-document-reference-mock.js"
-import { FactorySimpleDocument } from "../index.js"
 
 describe('Document', () => {
   describe('FactorySimpleDocument', () => {

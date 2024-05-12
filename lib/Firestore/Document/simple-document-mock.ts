@@ -1,7 +1,7 @@
 import { doc, setDoc } from "firebase/firestore"
 
 import { CollectionBaseDefaultMock } from "../Collection/collection-mock.js"
-import { FactorySimpleDocument } from "./index.js"
+import { FactorySimpleDocument } from "./document.js"
 
 const AN_YEAR = 2000
 const A_MONTH_N_DAY = 1

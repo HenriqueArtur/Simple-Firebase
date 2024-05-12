@@ -1,4 +1,4 @@
-import { FactorySimpleDocument } from "@src/Firestore/Document/index.js"
+import { FactorySimpleDocument } from "@src/Firestore/Document/document.js"
 import { type SchemaShape } from "@src/Firestore/Schema/schema.js"
 import { type ID } from "@src/types.js"
 import { type CollectionReference, doc, getDoc } from "firebase/firestore"

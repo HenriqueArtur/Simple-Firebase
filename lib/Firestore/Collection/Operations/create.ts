@@ -1,7 +1,7 @@
 import { type ID } from "@src/types.js"
 import { addDoc, type CollectionReference, doc, getDoc, setDoc } from "firebase/firestore"
 
-import { FactorySimpleDocument } from "../../Document/index.js"
+import { FactorySimpleDocument } from "../../Document/document.js"
 import { type SchemaShape } from "../../Schema/schema.js"
 import { type SimpleCollection, type SimpleCollectionBase } from "../collection.js"
 

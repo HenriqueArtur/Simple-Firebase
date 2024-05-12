@@ -1,5 +1,5 @@
-import { FactorySimpleDocument, type SimpleDocument } from "@src/Firestore/Document/index.js"
-import { flattenObject } from "@src/Firestore/Helpers.js"
+import { FactorySimpleDocument, type SimpleDocument } from "@src/Firestore/Document/document.js"
+import { flattenObject } from "@src/Firestore/Query/query-helpers.js"
 import {
   getASchemaPartial,
   type SchemaShape,

@@ -2,7 +2,7 @@ import { type ID, type Path } from "@src/types.js"
 import { collection, type CollectionReference, type Firestore } from "firebase/firestore"
 import { type z } from "zod"
 
-import { type SimpleDocument } from "../Document/index.js"
+import { type SimpleDocument } from "../Document/document.js"
 import { type SchemaShape, type SimpleSchema } from "../Schema/schema.js"
 import { Create, type CreateCustomOptions } from "./Operations/create.js"
 import { findById } from "./Operations/find-by-id.js"
