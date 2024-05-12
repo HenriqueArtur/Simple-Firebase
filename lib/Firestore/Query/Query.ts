@@ -1,62 +1,70 @@
+import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js"
 import {
-  CollectionReference,
-  Timestamp,
+  Exist,
+  IncludesSome,
+  IsEmpty,
+  NotExist,
+  SizeMoreThanOne
+} from "@src/language-functions.js"
+import {
   and,
+  type CollectionReference,
   limit,
   or,
   orderBy,
   query,
+  type QueryConstraint,
+  type QueryFilterConstraint,
+  Timestamp,
   where
-} from "firebase/firestore";
-import { AnOrderByDirection, AttributeOperators, SimpleQuery } from "./QueryTypes.js";
-import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js";
-import { aOperator, formatAKey, formatDirection, isOperator } from "./Helpers.js";
+} from "firebase/firestore"
+
+import { formatAKey, formatDirection } from "../Helpers.js"
+import { aOperator, isOperator } from "./operators.js"
+import { type AnOrderByDirection, type AttributeOperators, type SimpleQuery } from "./QueryTypes.js"
 
 export function formatQuery<T extends object>(
-  aCollection: CollectionReference,
-  aQuery: SimpleQuery<T>
+  a_collection: CollectionReference,
+  a_query: SimpleQuery<T>
 ) {
-  validateWhere(aQuery.where);
+  validateWhere(a_query.where)
   return query(
-    aCollection,
+    a_collection,
     ...[
-      ...formatWhere(aQuery.where),
-      ...formatOrderBy(aQuery.orderBy),
-      ...formatALimit(aQuery.limit)
-    ]
-  );
+      ...formatWhere(a_query.where),
+      ...formatOrderBy(a_query.orderBy),
+      ...formatALimit(a_query.limit)
+    ] as QueryConstraint[]
+  )
 }
 
-function validateWhere(aWhere: object) {
-  const keys = Object.keys(aWhere);
-  if (keys.length == 0) {
-    throw new SimpleFirebaseFirestoreError('"where" not be empty');
-  }
-  if ((keys.includes("$OR") || keys.includes("$AND")) && keys.length > 1) {
+function validateWhere(a_where: object) {
+  const keys = Object.keys(a_where)
+  if (IsEmpty(keys)) throw new SimpleFirebaseFirestoreError('"where" not be empty')
+  if (IncludesSome(keys, ["$OR", "$AND"]) && SizeMoreThanOne(keys))
     throw new SimpleFirebaseFirestoreError(
       'When "where" start with "$OR" or "$AND" only accept one of this keys in root of "where".'
-    );
-  }
+    )
 }
 
-export function formatWhere(aWhere: object, lastKey = ""): any[] {
-  let filters = [];
-  for (const [key, value] of Object.entries(aWhere)) {
-    if (key == "$OR") {
-      filters.push(or(...formatWhere(value)));
-      continue;
+export function formatWhere(a_where: object, last_key = ""): unknown[] {
+  const filters = []
+  for (const [key, value] of Object.entries(a_where)) {
+    if (key === "$OR") {
+      filters.push(or(...formatWhere(value as object) as QueryFilterConstraint[]))
+      continue
     }
-    if (key == "$AND") {
-      filters.push(and(...formatWhere(value)));
-      continue;
+    if (key === "$AND") {
+      filters.push(and(...formatWhere(value as object) as QueryFilterConstraint[]))
+      continue
     }
     if (isOperator(key)) {
-      filters.push(where(lastKey, aOperator(key as AttributeOperators), value));
-      continue;
+      filters.push(where(last_key, aOperator(key as AttributeOperators), value))
+      continue
     }
     if (Array.isArray(value)) {
-      filters.push(where(formatAKey(key, lastKey), "array-contains-any", value));
-      continue;
+      filters.push(where(formatAKey(key, last_key), "array-contains-any", value))
+      continue
     }
     if (
       typeof value === "string" ||
@@ -66,30 +74,30 @@ export function formatWhere(aWhere: object, lastKey = ""): any[] {
       value === null ||
       value instanceof Timestamp
     ) {
-      filters.push(where(formatAKey(key, lastKey), "==", value));
-      continue;
+      filters.push(where(formatAKey(key, last_key), "==", value))
+      continue
     }
     if (typeof value === "object") {
-      filters.push(...formatWhere(value, formatAKey(key, lastKey)));
-      continue;
+      filters.push(...formatWhere(value as object, formatAKey(key, last_key)))
+      continue
     }
   }
-  return filters;
+  return filters
 }
 
-export function formatOrderBy(anOrder?: object, lastKey = ""): any[] {
-  if (!anOrder || Object.keys(anOrder).length == 0) return [];
-  const order = [];
-  for (const [key, value] of Object.entries(anOrder)) {
-    if (typeof value === "object" && value != null) {
-      order.push(...formatOrderBy(value, formatAKey(key, lastKey)));
-      continue;
+export function formatOrderBy(an_order?: object, last_key = ""): unknown[] {
+  if (NotExist(an_order) || IsEmpty(Object.keys(an_order!))) return []
+  const order = []
+  for (const [key, value] of Object.entries(an_order!)) {
+    if (typeof value === "object" && value !== null) {
+      order.push(...formatOrderBy(value as object, formatAKey(key, last_key)))
+      continue
     }
-    order.push(orderBy(formatAKey(key, lastKey), formatDirection(value as AnOrderByDirection)));
+    order.push(orderBy(formatAKey(key, last_key), formatDirection(value as AnOrderByDirection)))
   }
-  return order;
+  return order
 }
 
-export function formatALimit(aLimit?: number) {
-  return !aLimit ? [] : [limit(aLimit)];
+export function formatALimit(a_limit?: number) {
+  return Exist(a_limit) ? [limit(a_limit!)] : []
 }
