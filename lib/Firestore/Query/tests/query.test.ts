@@ -3,7 +3,7 @@ import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
 import { and, collection, limit, or, orderBy, query, Timestamp, where } from "firebase/firestore"
 import { describe, expect, it } from "vitest"
 
-import { formatALimit, formatOrderBy, formatQuery, formatWhere } from "../Query.js"
+import { formatALimit, formatOrderBy, formatQuery, formatWhere } from "../query.js"
 import { type OrderBy, type SimpleQuery, type Where } from "../QueryTypes.js"
 
 describe("Query", async () => {
