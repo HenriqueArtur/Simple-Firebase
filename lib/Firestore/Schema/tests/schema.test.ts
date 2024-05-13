@@ -3,7 +3,6 @@ import { z } from "zod"
 
 import { CreateASchema, SCHEMA, type SchemaShape, validateSchema } from "../schema.js"
 
-// eslint-disable-next-line max-lines-per-function
 describe("Schema", () => {
   describe("SCHEMA Object", () => {
     it("should instantiate SCHEMA Object", () => {
@@ -53,7 +52,6 @@ describe("Schema", () => {
       const input = {
         string: 10
       }
-      // eslint-disable-next-line max-nested-callbacks
       expect(() => validateSchema(a_schema, input)).toThrow()
     })
   })

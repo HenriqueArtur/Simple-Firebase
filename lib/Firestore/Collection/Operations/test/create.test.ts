@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
 import { afterAll, describe, expect, it } from "vitest"
 
