@@ -1,11 +1,11 @@
-import { FirebaseObject } from "@src/__HELPERS__/firestoreTestsHelpers.js"
-import { CreateASchema, SCHEMA } from "@src/Firestore/Schema/index.js"
+import { CreateASchema, SCHEMA } from "@src/Firestore/Schema/schema.js"
+import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
 import { describe, expect, it } from "vitest"
 
 import { FactoryCollection } from "../collection.js"
 
 describe('Collection', async () => {
-  const { FIRESTORE_WEB } = await FirebaseObject()
+  const { FIRESTORE_WEB } = await BuildServicesTest()
 
   describe('FactoryCollection', () => {
     it('should return a SimpleCollection object with correct properties', () => {
