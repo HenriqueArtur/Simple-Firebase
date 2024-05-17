@@ -107,7 +107,7 @@ export function definePaginationByRule(
       a_docs_list_size,
       a_previous_pagination
     ),
-    documents_discovered: defineDocumentsDiscorvered(
+    documents_discovered: defineDocumentsDiscovered(
       a_rule,
       a_docs_list_size,
       a_previous_pagination
@@ -115,16 +115,16 @@ export function definePaginationByRule(
   }
 }
 
+const A_FIRST_PAGE = 0
 export function definePageByRule(
   a_rule: DocumentBuildRule,
-  a_previous_page?: number
+  a_previous_page: number = A_FIRST_PAGE
 ): number {
-  const A_FIRST_PAGE = 0
   const ONE = 1
   const NEGATIVE_PAGE = -1
   if (a_rule === "DEFAULT") return A_FIRST_PAGE
-  if (a_rule === "NEXT") return a_previous_page ?? A_FIRST_PAGE + ONE
-  const a_previous_current_page = a_previous_page ?? A_FIRST_PAGE - ONE
+  if (a_rule === "NEXT") return a_previous_page + ONE
+  const a_previous_current_page = a_previous_page - ONE
   return a_previous_current_page === NEGATIVE_PAGE
     ? A_FIRST_PAGE
     : a_previous_current_page
@@ -146,7 +146,7 @@ export function definePagesDiscovered(
   return ONE
 }
 
-export function defineDocumentsDiscorvered(
+export function defineDocumentsDiscovered(
   a_rule: DocumentBuildRule,
   a_docs_list_size: number,
   a_previous_pagination?: $Pagination
