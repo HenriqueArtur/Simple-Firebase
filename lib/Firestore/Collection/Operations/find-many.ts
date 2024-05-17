@@ -1,4 +1,5 @@
-import { FactoryManySimpleDocuments } from "@src/Firestore/Document/many-documents.js"
+import { FactorySimpleDocument } from "@src/Firestore/Document/document.js"
+import { FactoryManySimpleDocuments, type MetadataInfo } from "@src/Firestore/Document/many-documents.js"
 import { formatQuery } from "@src/Firestore/Query/query.js"
 import { type SimpleQuery } from "@src/Firestore/Query/query-types.js"
 import { type SchemaShape } from "@src/Firestore/Schema/schema.js"
@@ -15,10 +16,23 @@ export async function findMany<T extends SchemaShape>(
     a_query
   )
   const a_docs_list = await getDocs(a_query_firestore_web)
+  const a_simple_docs = a_docs_list.docs.map(
+    (a_doc) => FactorySimpleDocument(
+      a_simple_collection,
+      a_doc.id,
+      a_doc.data() as SimpleCollection<T>["_type"] | undefined,
+      a_doc.ref
+    )
+  )
+  const a_metadata_info: MetadataInfo = {
+    $QUERY: a_query_firestore_web,
+    $LIMIT: a_query.limit ?? null,
+    $CURSOR_POINT: "START_AFTER"
+  }
   return FactoryManySimpleDocuments(
     a_simple_collection,
-    a_docs_list,
-    a_query_firestore_web
+    a_simple_docs,
+    a_metadata_info
   )
 }
 
