@@ -15,7 +15,7 @@ describe("Firestore Update", async () => {
     const a_doc = await SimpleDocumentDefaultMock()
     const a_new_data = { text: "new" }
     const a_new_doc = await updateWithReference(a_doc, a_new_data)
-    expect(a_new_doc.data?.text).toBe(a_new_data.text)
+    expect(a_new_doc.data()?.text).toBe(a_new_data.text)
   })
 
   it("Should update with ID", async () => {
@@ -30,6 +30,6 @@ describe("Firestore Update", async () => {
       a_doc.id,
       a_new_data
     )
-    expect(a_new_doc.data?.text).toBe(a_new_data.text)
+    expect(a_new_doc.data()?.text).toBe(a_new_data.text)
   })
 })
