@@ -3,8 +3,8 @@ import { afterAll, describe, expect, it } from "vitest"
 
 import { CollectionBaseDefaultMock } from "../../collection-mock.js"
 import { findById } from "../find-by-id.js"
-import { cleanCollections } from "../tests-helpers/clean-collections.js"
-import { createATestDefaultObject } from "../tests-helpers/create-test-default-object.js"
+import { cleanCollections } from "./helpers/clean-collections.js"
+import { createATestDefaultObject } from "./helpers/create-test-default-object.js"
 
 describe("Firestore Find by ID", async () => {
   afterAll(async () => {

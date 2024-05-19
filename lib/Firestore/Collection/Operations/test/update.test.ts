@@ -2,8 +2,8 @@ import { SimpleDocumentDefaultMock } from "@src/Firestore/Document/document-mock
 import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
 import { afterAll, describe, expect, it } from "vitest"
 
-import { cleanCollections } from "../tests-helpers/clean-collections.js"
 import { updateWithId, updateWithReference } from "../update.js"
+import { cleanCollections } from "./helpers/clean-collections.js"
 
 describe("Firestore Update", async () => {
   afterAll(async () => {

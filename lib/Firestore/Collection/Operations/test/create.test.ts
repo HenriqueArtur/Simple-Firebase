@@ -3,7 +3,7 @@ import { afterAll, describe, expect, it } from "vitest"
 
 import { CollectionBaseDefaultMock } from "../../collection-mock.js"
 import { createInFirebaseAutoId, createInFirebaseCustomId } from "../create.js"
-import { cleanCollections } from "../tests-helpers/clean-collections.js"
+import { cleanCollections } from "./helpers/clean-collections.js"
 
 describe("Firestore Create", async () => {
   afterAll(async () => {

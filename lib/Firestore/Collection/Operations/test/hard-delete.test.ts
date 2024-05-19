@@ -4,8 +4,8 @@ import { afterAll, describe, expect, it } from "vitest"
 
 import { CollectionBaseDefaultMock } from "../../collection-mock.js"
 import { hardDelete } from "../hard-delete.js"
-import { cleanCollections } from "../tests-helpers/clean-collections.js"
-import { createATestDefaultObject } from "../tests-helpers/create-test-default-object.js"
+import { cleanCollections } from "./helpers/clean-collections.js"
+import { createATestDefaultObject } from "./helpers/create-test-default-object.js"
 
 describe("Firestore Hard Delete", async () => {
   afterAll(async () => {
