@@ -10,7 +10,7 @@ export default defineConfig({
     }
   },
   test: {
-    threads: true,
+    threads: false,
     globals: true,
     include: ["./lib/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
   }
