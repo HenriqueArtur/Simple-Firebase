@@ -1,4 +1,4 @@
-import { SimpleDocumentDefaultMock } from "@src/Firestore/Document/simple-document-mock.js"
+import { SimpleDocumentDefaultMock } from "@src/Firestore/Document/document-mock.js"
 import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
 import { afterAll, describe, expect, it } from "vitest"
 
