@@ -1,4 +1,4 @@
-import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
+import { BuildServicesTest } from "@src/tests/helpers/build-services.js"
 import { collection } from "firebase/firestore"
 
 import { CreateASchema, SCHEMA, type SchemaShape, type SimpleSchema } from "../Schema/schema.js"

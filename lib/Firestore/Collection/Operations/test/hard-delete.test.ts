@@ -1,4 +1,4 @@
-import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
+import { BuildServicesTest } from "@src/tests/helpers/build-services.js"
 import { doc, getDoc } from "firebase/firestore"
 import { afterAll, describe, expect, it } from "vitest"
 

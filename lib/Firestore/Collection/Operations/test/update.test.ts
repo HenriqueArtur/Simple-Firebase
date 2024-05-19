@@ -1,5 +1,5 @@
 import { SimpleDocumentDefaultMock } from "@src/Firestore/Document/document-mock.js"
-import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
+import { BuildServicesTest } from "@src/tests/helpers/build-services.js"
 import { afterAll, describe, expect, it } from "vitest"
 
 import { updateWithId, updateWithReference } from "../update.js"

@@ -1,5 +1,5 @@
 import { CreateASchema, SCHEMA } from "@src/Firestore/Schema/schema.js"
-import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
+import { BuildServicesTest } from "@src/tests/helpers/build-services.js"
 import { describe, expect, it } from "vitest"
 
 import { FactoryCollection } from "../collection.js"

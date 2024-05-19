@@ -1,4 +1,4 @@
-import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
+import { BuildServicesTest } from "@src/tests/helpers/build-services.js"
 import { type CollectionReference, type DocumentReference } from "firebase/firestore"
 
 export async function FactoryFirestoreDocumentReferenceMock(): Promise<DocumentReference> {

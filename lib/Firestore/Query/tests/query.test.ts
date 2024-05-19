@@ -1,5 +1,5 @@
 import { SimpleFirebaseFirestoreError } from "@src/Errors/SimpleFirebaseFirestoreError.js"
-import { BuildServicesTest } from "@src/tests-helpers/build-services.js"
+import { BuildServicesTest } from "@src/tests/helpers/build-services.js"
 import { and, collection, limit, or, orderBy, query, Timestamp, where } from "firebase/firestore"
 import { describe, expect, it } from "vitest"
 
