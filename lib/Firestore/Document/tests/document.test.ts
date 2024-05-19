@@ -4,7 +4,7 @@ import { type ID } from "@src/types.js"
 import { describe, expect, it } from "vitest"
 
 import { FactorySimpleDocument } from "../document.js"
-import { FactoryFirestoreDocumentReferenceMock } from "../firestore-document-reference-mock.js"
+import { FactoryFirestoreDocumentReferenceMock } from "./helpers/firestore-document-reference-mock.js"
 
 describe('Document', () => {
   describe('FactorySimpleDocument', () => {
