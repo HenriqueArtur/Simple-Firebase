@@ -4,36 +4,31 @@ import { type DocumentReference, type Query } from "firebase/firestore"
 import { type SimpleCollectionBase } from "../Collection/collection.js"
 import { type SchemaShape } from "../Schema/schema.js"
 import { type SimpleDocument } from "./document.js"
+import {
+  type $Metadata,
+  type $MetadataWithCursor,
+  type $MetadataWithoutCursor,
+  type $Pagination,
+  type CursorPoint,
+  type ManySimpleDocuments,
+  type ManySimpleDocumentsWithCursor,
+  type ManySimpleDocumentsWithoutCursor
+} from "./many-documents-types.js"
 
-export interface ManySimpleDocuments<T extends SchemaShape> {
-  readonly $METADATA: $Metadata<T>
-  readonly pagination: $Pagination
-  readonly docs: () => Array<SimpleDocument<T>>
-}
+export type MetadataInfo =
+  | MetadataInfoWithCursor
+  | MetadataInfoWithoutCursor
 
-export interface $Metadata<T extends SchemaShape> extends SimpleCollectionBase<T> {
+export interface MetadataInfoWithCursor {
   readonly $QUERY: Query
-  readonly $LIMIT: number | null
-  readonly $CURSOR_POINT: CursorPoint | null
-  readonly $CURSOR: DocumentReference | null
+  readonly $LIMIT: number
+  readonly $CURSOR_POINT: CursorPoint
 }
 
-export type CursorPoint =
-  | "START_AT"
-  | "START_AFTER"
-  | "END_AT"
-  | "END_BEFORE"
-
-export interface $Pagination {
-  page: number
-  pages_discovered: number
-  documents_discovered: number
-}
-
-export interface MetadataInfo {
+export interface MetadataInfoWithoutCursor {
   readonly $QUERY: Query
-  readonly $LIMIT: number | null
-  readonly $CURSOR_POINT: CursorPoint | null
+  readonly $LIMIT: null
+  readonly $CURSOR_POINT: null
 }
 
 export type DocumentBuildRule =
@@ -45,18 +40,33 @@ export function FactoryManySimpleDocuments<T extends SchemaShape>(
   a_collection: SimpleCollectionBase<T>,
   a_docs_list: Array<SimpleDocument<T>>,
   a_metadata: MetadataInfo,
+  a_cursor?: DocumentReference,
   a_previous_many_docs?: ManySimpleDocuments<T>,
   a_rule: DocumentBuildRule = "DEFAULT",
 ): ManySimpleDocuments<T> {
-  validateManySimpleDocuments(
-    a_rule,
-    a_previous_many_docs,
-  )
-  return {
+  validateManySimpleDocuments(a_rule, a_previous_many_docs)
+  if (Exist(a_cursor)) {
+    const a_final_documents: ManySimpleDocumentsWithCursor<T> = {
+      $METADATA: defineMetadata(
+        a_collection,
+        a_metadata,
+        a_cursor
+      ) as $MetadataWithCursor<T>,
+      pagination: definePaginationByRule(
+        a_rule,
+        a_docs_list.length,
+        a_previous_many_docs?.pagination
+      ),
+      docs: () => a_docs_list
+    }
+    return a_final_documents
+  }
+  const a_final_documents: ManySimpleDocumentsWithoutCursor<T> = {
     $METADATA: defineMetadata(
       a_collection,
-      a_metadata
-    ),
+      a_metadata,
+      a_cursor
+    ) as $MetadataWithoutCursor<T>,
     pagination: definePaginationByRule(
       a_rule,
       a_docs_list.length,
@@ -64,6 +74,7 @@ export function FactoryManySimpleDocuments<T extends SchemaShape>(
     ),
     docs: () => a_docs_list
   }
+  return a_final_documents
 }
 
 export function validateManySimpleDocuments<T extends SchemaShape>(
@@ -84,12 +95,22 @@ export function validateManySimpleDocuments<T extends SchemaShape>(
 export function defineMetadata<T extends SchemaShape>(
   a_collection: SimpleCollectionBase<T>,
   a_metadata: MetadataInfo,
+  a_cursor?: DocumentReference
 ): $Metadata<T> {
-  return {
+  if (a_metadata.$LIMIT === null) {
+    const a_final_metadata: $MetadataWithoutCursor<T> = {
+      ...a_collection,
+      ...a_metadata,
+      $CURSOR: null,
+    }
+    return a_final_metadata
+  }
+  const a_final_metadata: $MetadataWithCursor<T> = {
     ...a_collection,
     ...a_metadata,
-    $CURSOR: null,
+    $CURSOR: a_cursor!,
   }
+  return a_final_metadata
 }
 
 export function definePaginationByRule(

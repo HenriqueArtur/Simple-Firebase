@@ -1,14 +1,16 @@
 import { describe, expect, it } from "vitest"
 
 import {
-  type $Pagination,
   defineDocumentsDiscovered,
   definePageByRule,
   definePagesDiscovered,
   type DocumentBuildRule,
-  validateManySimpleDocuments
+  validateManySimpleDocuments,
 } from "../many-documents.js"
 import { ManyDocumentsDefaultMock } from "../many-documents-mock.js"
+import {
+  type $Pagination,
+} from "../many-documents-types.js"
 
 describe("validateManySimpleDocuments", async () => {
   it("should throw an error if there are no previous documents and rule is 'PREVIOUS'", () => {

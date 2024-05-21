@@ -2,7 +2,7 @@ import { query } from "firebase/firestore"
 
 import { type DefaultSchemaMock } from "../Schema/schema-mock.js"
 import { SimpleDocumentDefaultMock } from "./document-mock.js"
-import { type ManySimpleDocuments } from "./many-documents.js"
+import { type ManySimpleDocuments } from "./many-documents-types.js"
 
 export async function ManyDocumentsDefaultMock(): Promise<ManySimpleDocuments<DefaultSchemaMock>> {
   const a_doc_mock = await SimpleDocumentDefaultMock()
