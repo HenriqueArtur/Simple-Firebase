@@ -49,3 +49,25 @@ export interface $Pagination {
   pages_discovered: number
   documents_discovered: number
 }
+
+export type MetadataInfo =
+  | MetadataInfoWithCursor
+  | MetadataInfoWithoutCursor
+
+export interface MetadataInfoWithCursor {
+  readonly $QUERY: Query
+  readonly $LIMIT: number
+  readonly $CURSOR_POINT: CursorPoint
+}
+
+export interface MetadataInfoWithoutCursor {
+  readonly $QUERY: Query
+  readonly $LIMIT: null
+  readonly $CURSOR_POINT: null
+}
+
+export type DocumentBuildRule =
+  | "DEFAULT"
+  | "NEXT"
+  | "PREVIOUS"
+

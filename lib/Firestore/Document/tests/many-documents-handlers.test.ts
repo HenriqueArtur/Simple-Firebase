@@ -4,12 +4,12 @@ import {
   defineDocumentsDiscovered,
   definePageByRule,
   definePagesDiscovered,
-  type DocumentBuildRule,
   validateManySimpleDocuments,
-} from "../many-documents.js"
+} from "../many-documents-handlers.js"
 import { ManyDocumentsDefaultMock } from "../many-documents-mock.js"
 import {
   type $Pagination,
+  type DocumentBuildRule,
 } from "../many-documents-types.js"
 
 describe("validateManySimpleDocuments", async () => {

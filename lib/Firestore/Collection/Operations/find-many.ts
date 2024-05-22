@@ -1,5 +1,8 @@
 import { FactorySimpleDocument } from "@src/Firestore/Document/document.js"
-import { FactoryManySimpleDocuments, type MetadataInfo } from "@src/Firestore/Document/many-documents.js"
+import {
+  FactoryManySimpleDocuments
+} from "@src/Firestore/Document/many-documents.js"
+import { buildMetaData } from "@src/Firestore/Document/many-documents-handlers.js"
 import { formatQuery } from "@src/Firestore/Query/query.js"
 import { type SimpleQuery } from "@src/Firestore/Query/query-types.js"
 import { type SchemaShape } from "@src/Firestore/Schema/schema.js"
@@ -24,15 +27,15 @@ export async function findMany<T extends SchemaShape>(
       a_doc.ref
     )
   )
-  const a_metadata_info: MetadataInfo = {
-    $QUERY: a_query_firestore_web,
-    $LIMIT: a_query.limit ?? null,
-    $CURSOR_POINT: "START_AFTER"
-  }
+  const a_metadata_info = buildMetaData(
+    a_query_firestore_web,
+    a_query.limit
+  )
   return FactoryManySimpleDocuments(
     a_simple_collection,
     a_simple_docs,
     a_metadata_info
   )
 }
+
 
