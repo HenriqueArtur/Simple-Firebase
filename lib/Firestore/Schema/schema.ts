@@ -1,27 +1,36 @@
-import { z } from "zod"
-
-export type SchemaShape = z.ZodRawShape
-export type SchemaType = z.ZodSchema
-
-export type SimpleSchema<T extends SchemaShape> = z.ZodObject<T>
+import { SimpleBoolean } from "./types/Boolean/boolean-type.js"
+import { type SimpleTypeDefault } from "./types/Default/default-type.js"
+import { SimpleTypeNull } from "./types/Default/null-type.js"
+import { SimpleFloat } from "./types/Number/float-type.js"
+import { SimpleInt } from "./types/Number/int-type.js"
+import { SimpleNumber } from "./types/Number/number-type.js"
+import { SimpleString } from "./types/String/string-type.js"
+import { SimpleTimestamp } from "./types/Timestamp/timestamp-type.js"
 
 export const SCHEMA = {
-  boolean: () => z.boolean(),
-  date: () => z.date(),
-  map: <T extends SchemaShape>(a_map_schema: T) => z.object(a_map_schema),
-  null: () => z.null(),
-  number: () => z.number(),
-  string: () => z.string(),
+  boolean: () => new SimpleBoolean(),
+  date: () => new SimpleTimestamp(),
+  null: () => new SimpleTypeNull(),
+  number: () => new SimpleNumber(),
+  int: () => new SimpleInt(),
+  float: () => new SimpleFloat(),
+  string: () => new SimpleString(),
 }
 
-export function CreateASchema<T extends SchemaShape>(a_schema: T): SimpleSchema<T> {
-  return z.object(a_schema)
+export interface SimpleSchema<T> {
+  readonly $SCHEMA: T
 }
 
-export function validateSchema<T extends SchemaType>(a_schema: T, a_data: unknown) {
-  return a_schema.parse(a_data) as z.infer<T>
+export type Infer<T extends SimpleSchema<unknown>> = {
+  [K in keyof T["$SCHEMA"]]: T["$SCHEMA"][K] extends SimpleTypeDefault<infer I>
+  ? I
+  : never
 }
 
-export function getASchemaPartial<T extends SchemaShape>(a_schema: SimpleSchema<T>) {
-  return a_schema.deepPartial()
+export function FactorySimpleSchema<T extends Record<string, SimpleTypeDefault<unknown>>>(
+  a_schema: T
+): SimpleSchema<T> {
+  return {
+    $SCHEMA: a_schema
+  }
 }
