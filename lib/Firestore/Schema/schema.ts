@@ -27,7 +27,9 @@ export type Infer<T extends SimpleSchema<unknown>> = {
   : never
 }
 
-export function FactorySimpleSchema<T extends Record<string, SimpleTypeDefault<unknown>>>(
+export type SchemaShape = Record<string, SimpleTypeDefault<unknown>>
+
+export function FactorySimpleSchema<T extends SchemaShape>(
   a_schema: T
 ): SimpleSchema<T> {
   return {

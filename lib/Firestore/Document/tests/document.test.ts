@@ -1,5 +1,5 @@
 import { CollectionMock } from "@src/Firestore/Collection/collection-mock.js"
-import { CreateASchema, SCHEMA } from "@src/Firestore/Schema/schema.js"
+import { FactorySimpleSchema, SCHEMA } from "@src/Firestore/Schema/schema.js"
 import { type ID } from "@src/types.js"
 import { describe, expect, it } from "vitest"
 
@@ -9,7 +9,7 @@ import { FactoryFirestoreDocumentReferenceMock } from "./helpers/firestore-docum
 describe('Document', () => {
   describe('FactorySimpleDocument', () => {
     it('should return a SimpleDocument object with correct properties', async () => {
-      const a_schema = CreateASchema({
+      const a_schema = FactorySimpleSchema({
         test: SCHEMA.string()
       })
       const a_mock_collection = await CollectionMock(a_schema)

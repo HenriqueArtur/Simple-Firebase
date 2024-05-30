@@ -1,4 +1,4 @@
-import { CreateASchema, SCHEMA } from "@src/Firestore/Schema/schema.js"
+import { FactorySimpleSchema, SCHEMA } from "@src/Firestore/Schema/schema.js"
 import { BuildServicesTest } from "@src/tests/helpers/build-services.js"
 import { describe, expect, it } from "vitest"
 
@@ -11,7 +11,7 @@ describe('Collection', async () => {
     it('should return a SimpleCollection object with correct properties', () => {
       const a_firestore = FIRESTORE_WEB
       const a_path = 'test'
-      const a_schema = CreateASchema({
+      const a_schema = FactorySimpleSchema({
         test: SCHEMA.string()
       })
       const result = FactoryCollection(a_firestore, a_path, a_schema)

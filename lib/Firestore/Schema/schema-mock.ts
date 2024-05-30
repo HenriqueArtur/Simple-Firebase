@@ -1,7 +1,6 @@
-import { CreateASchema, SCHEMA } from "./schema.js"
+import { FactorySimpleSchema, SCHEMA, type SchemaShape } from "./schema.js"
 
-const DEFAULT_SCHEMA_SHAPE_MOCK = {
-  array: SCHEMA.string().array(),
+const DEFAULT_SCHEMA_SHAPE_MOCK: SchemaShape = {
   boolean: SCHEMA.boolean(),
   date: SCHEMA.date(),
   null: SCHEMA.null(),
@@ -12,5 +11,5 @@ const DEFAULT_SCHEMA_SHAPE_MOCK = {
 export type DefaultSchemaMock = typeof DEFAULT_SCHEMA_SHAPE_MOCK
 
 export function DEFAULT_SCHEMA_MOCK() {
-  return CreateASchema(DEFAULT_SCHEMA_SHAPE_MOCK)
+  return FactorySimpleSchema(DEFAULT_SCHEMA_SHAPE_MOCK)
 }

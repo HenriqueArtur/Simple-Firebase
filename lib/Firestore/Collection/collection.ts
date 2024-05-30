@@ -1,11 +1,10 @@
 import { type Deep, type ID, type Path } from "@src/types.js"
 import { collection, type CollectionReference, type Firestore } from "firebase/firestore"
-import { type z } from "zod"
 
 import { type SimpleDocument } from "../Document/document.js"
-import { type ManySimpleDocuments } from "../Document/many-documents.js"
+import { type ManySimpleDocuments } from "../Document/many-documents-types.js"
 import { type SimpleQuery } from "../Query/query-types.js"
-import { type SchemaShape, type SimpleSchema } from "../Schema/schema.js"
+import { type Infer, type SchemaShape, type SimpleSchema } from "../Schema/schema.js"
 import { Create, type CreateCustomOptions } from "./Operations/create.js"
 import { findById } from "./Operations/find-by-id.js"
 import { findMany } from "./Operations/find-many.js"
@@ -19,23 +18,23 @@ export interface SimpleCollectionBase<T extends SchemaShape> {
 }
 
 export interface SimpleCollection<T extends SchemaShape> extends SimpleCollectionBase<T> {
-  readonly _type: z.infer<SimpleSchema<T>>
+  readonly $TYPE: Infer<SimpleSchema<T>>
   readonly create: (
-    a_new_data: SimpleCollection<T>["_type"],
+    a_new_data: SimpleCollection<T>["$TYPE"],
     a_custom_options?: CreateCustomOptions
   ) => Promise<SimpleDocument<T>>
   readonly findById: (
     an_id: ID
   ) => Promise<SimpleDocument<T>>
   readonly findMany: (
-    a_query: SimpleQuery<SimpleCollection<T>["_type"]>
+    a_query: SimpleQuery<SimpleCollection<T>["$TYPE"]>
   ) => Promise<ManySimpleDocuments<T>>
   readonly hardDelete: (
     an_id: ID
   ) => Promise<void>
   readonly update: (
     a_document: ID | SimpleDocument<T>,
-    a_new_data: Deep<SimpleCollection<T>["_type"]>
+    a_new_data: Deep<SimpleCollection<T>["$TYPE"]>
   ) => Promise<SimpleDocument<T>>
 }
 
@@ -52,7 +51,7 @@ export function FactoryCollection<T extends SchemaShape>(
 }
 
 class ConcreteSimpleCollection<T extends SchemaShape> {
-  readonly _type!: z.infer<SimpleSchema<T>>
+  readonly $TYPE!: Infer<SimpleSchema<T>>
   readonly $COLLECTION: CollectionReference
   readonly $PATH: Path
   readonly $SCHEMA: SimpleSchema<T>
@@ -68,7 +67,7 @@ class ConcreteSimpleCollection<T extends SchemaShape> {
   }
 
   async create(
-    a_new_data: SimpleCollection<T>["_type"],
+    a_new_data: SimpleCollection<T>["$TYPE"],
     a_custom_options?: CreateCustomOptions
   ) {
     return await Create(
@@ -85,7 +84,7 @@ class ConcreteSimpleCollection<T extends SchemaShape> {
     )
   }
 
-  async findMany(a_query: SimpleQuery<SimpleCollection<T>["_type"]>) {
+  async findMany(a_query: SimpleQuery<SimpleCollection<T>["$TYPE"]>) {
     return await findMany(
       this.$SIMPLE_COLLECTION(),
       a_query
@@ -101,7 +100,7 @@ class ConcreteSimpleCollection<T extends SchemaShape> {
 
   async update(
     a_document: ID | SimpleDocument<T>,
-    a_new_data: Deep<SimpleCollection<T>["_type"]>
+    a_new_data: Deep<SimpleCollection<T>["$TYPE"]>
   ) {
     return await update(
       this.$SIMPLE_COLLECTION(),
