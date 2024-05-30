@@ -138,7 +138,7 @@
     "no-unneeded-ternary": "error",
     "no-useless-catch": "error",
     "no-useless-concat": "error",
-    "no-useless-constructor": "error",
+    "no-useless-constructor": "off",
     "no-useless-escape": "error",
     "no-useless-return": "error",
     "no-var": "error",
