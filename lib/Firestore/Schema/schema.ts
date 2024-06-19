@@ -1,3 +1,4 @@
+import { schemaValidation } from "./schema-validation.js"
 import { SimpleBoolean } from "./types/Boolean/boolean-type.js"
 import { type SimpleTypeDefault } from "./types/Default/default-type.js"
 import { SimpleTypeNull } from "./types/Default/null-type.js"
@@ -17,11 +18,17 @@ export const SCHEMA = {
   string: () => new SimpleString(),
 }
 
-export interface SimpleSchema<T> {
+export interface SimpleSchema<T> extends SimpleSchemaType<T>, SimpleSchemaFunctions<T> { }
+
+export interface SimpleSchemaType<T> {
   readonly $SCHEMA: T
 }
 
-export type Infer<T extends SimpleSchema<unknown>> = {
+export interface SimpleSchemaFunctions<T> {
+  readonly validate: (data: Infer<SimpleSchemaType<T>>) => Infer<SimpleSchemaType<T>>
+}
+
+export type Infer<T extends SimpleSchemaType<unknown>> = {
   [K in keyof T["$SCHEMA"]]: T["$SCHEMA"][K] extends SimpleTypeDefault<infer I>
   ? I
   : never
@@ -33,6 +40,9 @@ export function FactorySimpleSchema<T extends SchemaShape>(
   a_schema: T
 ): SimpleSchema<T> {
   return {
-    $SCHEMA: a_schema
+    $SCHEMA: a_schema,
+    validate: (a_data: Infer<SimpleSchemaType<T>>): Infer<SimpleSchemaType<T>> =>
+      schemaValidation(a_data, a_schema)
   }
 }
+
