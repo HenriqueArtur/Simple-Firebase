@@ -22,7 +22,7 @@ export class SimpleString extends SimpleTypeDefault<string> {
       a_key,
       this.validationChain(a_value)
     ),
-    a_value ?? this.default_value
+      a_value
     ]
   }
 
