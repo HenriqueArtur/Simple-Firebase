@@ -2,22 +2,20 @@ import { type SimpleTypeErrorItem } from "../../error/simple-type-error.js"
 import { SimpleTypeNull } from "./null-type.js"
 import { SimpleTypeOptional } from "./optional-type.js"
 
-export abstract class SimpleTypeDefault<T>  {
+export abstract class SimpleTypeDefault<T> {
   readonly $TYPE!: T
-  readonly allow_null = false
-  readonly is_optional = false
 
   constructor(
     readonly default_value?: T,
   ) { }
 
   allowNull() {
-    return new SimpleTypeNull<T | null>(this.default_value)
+    return new SimpleTypeNull<T>(this)
   }
 
   isOptional() {
-    return new SimpleTypeOptional<T | undefined>(this.default_value)
+    return new SimpleTypeOptional<T>(this)
   }
 
-  abstract validate(a_key: string, a_data: T): [SimpleTypeErrorItem, T]
+  abstract validate(a_key: string, a_data: unknown): [SimpleTypeErrorItem, unknown]
 }
