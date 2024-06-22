@@ -13,7 +13,8 @@ export class SimpleTypeNull<T> {
   readonly $TYPE!: T | null
 
   constructor(
-    readonly $OLD_INSTANCE?: SimpleTypeDefault<T>
+    readonly $OLD_INSTANCE?: SimpleTypeDefault<T>,
+    readonly default_value?: T | null
   ) { }
 
   validate(a_key: string, a_value: T | null): [SimpleTypeErrorItem, T | null] {

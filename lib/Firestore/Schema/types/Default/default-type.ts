@@ -10,7 +10,7 @@ export abstract class SimpleTypeDefault<T> {
   ) { }
 
   allowNull() {
-    return new SimpleTypeNull<T>(this)
+    return new SimpleTypeNull<T>(this, this.default_value)
   }
 
   isOptional() {
