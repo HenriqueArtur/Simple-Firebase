@@ -4,15 +4,15 @@ import { createSimpleTypeErrorItem, type SimpleTypeErrorItem, type ValidationTup
 import { SimpleTypeDefault } from "../Default/default-type.js"
 
 export interface SimpleString extends SimpleTypeDefault<string> {
-  readonly min_lenght?: number
-  readonly max_lenght?: number
+  readonly min_length?: number
+  readonly max_length?: number
 }
 
 export class SimpleString extends SimpleTypeDefault<string> {
   constructor(
     readonly default_value?: string,
-    readonly min_lenght?: number,
-    readonly max_lenght?: number
+    readonly min_length?: number,
+    readonly max_length?: number
   ) {
     super(default_value)
   }
@@ -29,14 +29,21 @@ export class SimpleString extends SimpleTypeDefault<string> {
   private validationChain(a_value: string): ValidationTuple[] {
     return [
       [
-        Exist(this.min_lenght) && a_value.length < this.min_lenght!,
-        `"${a_value}" has length less than "${this.min_lenght}"`
+        validateMinLength(a_value, this.min_length),
+        `"${a_value}" has length less than "${this.min_length}"`
       ],
       [
-        Exist(this.max_lenght) && a_value.length > this.max_lenght!,
-        `"${a_value}" has length greater than "${this.max_lenght}"`
+        validateMaxLength(a_value, this.max_length),
+        `"${a_value}" has length greater than "${this.max_length}"`
       ],
     ]
   }
 }
 
+export function validateMinLength(a_value: string, a_min_length?: number): boolean {
+  return Exist(a_min_length) && a_value.length < a_min_length!
+}
+
+export function validateMaxLength(a_value: string, a_max_length?: number): boolean {
+  return Exist(a_max_length) && a_value.length > a_max_length!
+}
